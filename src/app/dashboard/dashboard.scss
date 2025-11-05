@@ -1,0 +1,28 @@
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap; // Lets cards stack on small screens
+    gap: 1.5rem; // Spacing between cards
+    padding: 1.5rem; // Spacing around the container
+}
+
+.dashboard-card {
+    flex: 1 1 300px; // All cards grow, but start at 300px
+}
+
+// This centers our new MatSpinner
+.card-loader {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.create-task-card {
+    flex: 2 1 450px;
+}
+
+// --- ADD THIS ---
+.full-width-card {
+    flex-basis: 100%; // This makes the card take the full width
+}

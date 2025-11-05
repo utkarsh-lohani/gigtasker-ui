@@ -1,0 +1,16 @@
+.detail-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+
+mat-card {
+    width: 100%;
+    max-width: 800px;
+}
+
+.back-button {
+    align-self: flex-start;
+}

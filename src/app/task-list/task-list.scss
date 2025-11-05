@@ -1,0 +1,29 @@
+table {
+    width: 100%;
+}
+
+// These styles center our loader and empty states
+.loader-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    height: 150px;
+    color: #777;
+}
+
+.empty-state mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+}
+
+.task-row {
+    cursor: pointer; // Makes the mouse turn into a "hand"
+
+    &:hover {
+        background-color: #f5f5f5; // A subtle hover effect
+    }
+}
