@@ -1,0 +1,26 @@
+<div class="detail-container">
+    <a mat-stroked-button routerLink="/dashboard" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+    </a>
+
+    @if (task()) {
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ task()?.title }}</mat-card-title>
+            <mat-card-subtitle>Status: {{ task()?.status }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <h3>Description</h3>
+            <p>{{ task()?.description }}</p>
+            <hr />
+            <p><strong>Posted by User ID:</strong> {{ task()?.posterUserId }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-flat-button color="primary">Bid on this Gig</button>
+        </mat-card-actions>
+    </mat-card>
+    } @else {
+    <mat-spinner diameter="80"></mat-spinner>
+    }
+</div>
