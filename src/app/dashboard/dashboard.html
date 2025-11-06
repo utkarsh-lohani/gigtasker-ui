@@ -28,17 +28,28 @@
             <mat-card-title>Post a New Gig</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <app-create-task [currentUser]="user()" (taskCreated)="refreshTaskLists()"></app-create-task>
+            <app-create-task
+                [currentUser]="user()"
+                (taskCreated)="refreshTaskLists()"
+            ></app-create-task>
         </mat-card-content>
     </mat-card>
 
-    <mat-tab-group class="dashboard-card full-width-card" animationDuration="500ms">
+    <mat-tab-group
+        class="dashboard-card full-width-card"
+        animationDuration="500ms"
+        (selectedTabChange)="selectedTabIndex.set($event.index)"
+    >
         <mat-tab label="All Gigs">
+            @if (selectedTabIndex() === 0) {
             <app-task-list></app-task-list>
+            }
         </mat-tab>
 
         <mat-tab label="My Posted Gigs">
-            <app-task-list [userId]="user()?.id"></app-task-list>
+            @if (selectedTabIndex() === 1 && user()) {
+            <app-task-list [userId]="user()!.id"></app-task-list>
+            }
         </mat-tab>
     </mat-tab-group>
 </div>

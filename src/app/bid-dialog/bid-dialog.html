@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Place Your Bid</h2>
+
+<mat-dialog-content>
+    <p>Submit your bid and explain why you're the best for this gig.</p>
+
+    <form [formGroup]="bidForm" class="bid-dialog-form">
+        <mat-form-field appearance="fill">
+            <mat-label>Your Bid Amount</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="amount" placeholder="50" />
+            @if (bidForm.controls.amount.hasError('required')) {
+            <mat-error>An amount is required.</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Your Proposal</mat-label>
+            <textarea
+                matInput
+                formControlName="proposal"
+                placeholder="e.g. 'I have built this exact shelf 5 times and can do it in an hour.'"
+                rows="4"
+            ></textarea>
+            @if (bidForm.controls.proposal.hasError('required')) {
+            <mat-error>A proposal is required.</mat-error>
+            }
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button mat-flat-button color="primary" [disabled]="bidForm.invalid" (click)="submitBid()">
+        Submit Bid
+    </button>
+</mat-dialog-actions>

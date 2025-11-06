@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserDTO } from './models/user.model';
 import { TaskDTO } from './models/task.model';
+import { BidDTO } from './models/bid.model';
 
 @Injectable({
     providedIn: 'root',
@@ -35,5 +36,14 @@ export class ApiService {
 
     public getTaskById(id: number): Observable<TaskDTO> {
         return this.http.get<TaskDTO>(`${this.API_URL}/api/tasks/${id}`);
+    }
+
+    public placeBid(taskId: number, amount: number, proposal: string): Observable<BidDTO> {
+        const bidRequest = {
+            taskId: taskId,
+            amount: amount,
+            proposal: proposal,
+        };
+        return this.http.post<BidDTO>(`${this.API_URL}/api/bids`, bidRequest);
     }
 }
