@@ -1,0 +1,20 @@
+.bid-item {
+    height: auto !important; // Allow item to grow
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.proposal-text {
+    white-space: normal; // Allow text to wrap
+    line-height: 1.4;
+    padding-top: 5px;
+}
+
+.empty-state,
+.loader-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+    color: #777;
+}

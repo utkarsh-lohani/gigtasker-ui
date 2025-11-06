@@ -60,14 +60,13 @@ export class Dashboard {
 
     // This method is called by the (taskCreated) event
     public refreshTaskLists(): void {
-        // Now we just re-run the *specific* loads
+        // We just re-run the *specific* loads
         this.loadAllTasks();
         if (this.user()) {
             this.loadMyTasks();
         }
     }
 
-    // --- 6. NEW DATA-LOADING METHODS ---
     private loadAllTasks(): void {
         this.allTasksLoading.set(true);
         this.apiService.getAllTasks().subscribe({

@@ -6,4 +6,13 @@ export interface BidDTO {
     bidderUserId: number;
     amount: number;
     status: BidStatus;
+    proposal: string;
+}
+export interface BidDetailDTO {
+    bidId: number;
+    amount: number;
+    proposal: string;
+    status: BidStatus;
+    bidderUserId: number;
+    bidderName: string;
 }

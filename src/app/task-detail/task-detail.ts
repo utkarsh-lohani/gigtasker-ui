@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
 import { BidDialog } from '../bid-dialog/bid-dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { ViewBidsDialog } from '../view-bids-dialog/view-bids-dialog';
 
 @Component({
     selector: 'app-task-detail',
@@ -53,6 +54,13 @@ export class TaskDetail {
 
     public currentUser = toSignal(this.apiService.getMe());
 
+    public isOwner = computed(() => {
+        const t = this.task();
+        const u = this.currentUser();
+        if (!t || !u) return false;
+        return t.posterUserId === u.id;
+    });
+
     public openBidDialog(): void {
         const task = this.task();
         if (!task) return; // Shouldn't happen, but good to check
@@ -60,6 +68,16 @@ export class TaskDetail {
         this.dialog.open(BidDialog, {
             width: '500px',
             data: { taskId: task.id }, // Pass the Task ID to the dialog
+        });
+    }
+
+    public openViewBidsDialog(): void {
+        const taskId = this.task()?.id;
+        if (!taskId) return;
+
+        this.dialog.open(ViewBidsDialog, {
+            width: '600px',
+            data: { taskId: taskId }, // Pass in the task ID
         });
     }
 }

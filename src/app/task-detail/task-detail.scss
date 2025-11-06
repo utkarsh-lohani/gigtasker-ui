@@ -25,3 +25,10 @@ mat-card {
 .bid-amount-field {
     flex-grow: 1; // Make the field take up available space
 }
+
+.loader-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+}
