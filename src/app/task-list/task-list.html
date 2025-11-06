@@ -3,12 +3,12 @@
         <mat-card-title>Available Gigs</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        @if (isLoading()) {
+        @if (isLoading) {
         <div class="loader-state">
             <mat-spinner diameter="50"></mat-spinner>
         </div>
-        } @else if (tasks() && tasks()!.length > 0) {
-        <table mat-table [dataSource]="tasks()!" class="mat-elevation-z8">
+        } @else if (tasks && tasks!.length > 0) {
+        <table mat-table [dataSource]="tasks!" class="mat-elevation-z8">
             <ng-container matColumnDef="sno">
                 <th mat-header-cell *matHeaderCellDef>Serial No.</th>
                 <td mat-cell *matCellDef="let task; let i = index">{{ i + 1 }}</td>
