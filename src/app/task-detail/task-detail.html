@@ -17,7 +17,20 @@
             <p><strong>Posted by User ID:</strong> {{ task()?.posterUserId }}</p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-flat-button color="primary">Bid on this Gig</button>
+            @if (task() && currentUser() && task()!.posterUserId !== currentUser()!.id) {
+
+            <button mat-flat-button color="primary" (click)="openBidDialog()">
+                Bid on this Gig
+            </button>
+
+            } @else if (task() && currentUser() && task()!.posterUserId === currentUser()!.id) {
+
+            <button mat-flat-button color="primary" [disabled]="true">
+                <mat-icon>gavel</mat-icon>
+                This is your gig
+            </button>
+
+            } @else { }
         </mat-card-actions>
     </mat-card>
     } @else {

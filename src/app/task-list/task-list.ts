@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
     templateUrl: './task-list.html',
     styleUrl: './task-list.scss',
 })
-export class TaskList implements OnChanges, OnInit {
+export class TaskList implements OnInit {
     private readonly apiService = inject(ApiService);
     private readonly router = inject(Router);
 
@@ -26,13 +26,6 @@ export class TaskList implements OnChanges, OnInit {
 
     // This tells the table which columns to show and in what order
     public displayedColumns: string[] = ['sno', 'id', 'title', 'status', 'actions'];
-
-    // This is the hook that fires when an @Input() changes
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['userId']) {
-            this.loadTasks();
-        }
-    }
 
     ngOnInit(): void {
         this.loadTasks();
