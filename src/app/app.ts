@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -8,21 +8,27 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, CommonModule, RouterLink,
+    imports: [
+        RouterOutlet,
+        CommonModule,
+        RouterLink,
         MatToolbarModule,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
     ],
     templateUrl: './app.html',
     styleUrl: './app.scss',
 })
 export class App implements OnInit {
-
     public authService = inject(AuthService);
+    public isLoading = signal(true);
 
     constructor() {}
 
     ngOnInit(): void {
         this.authService.initLoginFlow();
+        setTimeout(() => {
+            this.isLoading.set(false);
+        }, 3000);
     }
 }

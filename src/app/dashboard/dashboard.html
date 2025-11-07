@@ -51,5 +51,10 @@
             <app-task-list [tasks]="myTasks()" [isLoading]="myTasksLoading()"></app-task-list>
             }
         </mat-tab>
+        <mat-tab label="My Bids">
+            @if (selectedTabIndex() === 2 && user()) {
+            <app-my-bids [bids]="myBids()" [isLoading]="myBidsLoading()"> </app-my-bids>
+            }
+        </mat-tab>
     </mat-tab-group>
 </div>

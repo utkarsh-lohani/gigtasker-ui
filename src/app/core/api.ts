@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserDTO } from './models/user.model';
 import { TaskDTO } from './models/task.model';
-import { BidDetailDTO, BidDTO } from './models/bid.model';
+import { BidDetailDTO, BidDTO, MyBidDetailDTO } from './models/bid.model';
 
 @Injectable({
     providedIn: 'root',
@@ -53,5 +53,9 @@ export class ApiService {
 
     public acceptBid(bidId: number): Observable<void> {
         return this.http.post<void>(`${this.API_URL}/api/bids/${bidId}/accept`, {});
+    }
+
+    public getMyBids(): Observable<MyBidDetailDTO[]> {
+        return this.http.get<MyBidDetailDTO[]>(`${this.API_URL}/api/bids/my-bids`);
     }
 }

@@ -9,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TaskList } from '../task-list/task-list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TaskDTO } from '../core/models/task.model';
+import { MyBids } from '../my-bids/my-bids';
+import { MyBidDetailDTO } from '../core/models/bid.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,6 +21,7 @@ import { TaskDTO } from '../core/models/task.model';
         CreateTask,
         TaskList,
         MatProgressSpinnerModule,
+        MyBids,
     ],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss',
@@ -34,25 +37,36 @@ export class Dashboard {
     // We create writable signals for our data
     public allTasks = signal<TaskDTO[] | undefined>(undefined);
     public myTasks = signal<TaskDTO[] | undefined>(undefined);
+    public myBids = signal<MyBidDetailDTO[] | undefined>(undefined);
 
     // We also create signals for *their* loading states
     public allTasksLoading = signal(true);
     public myTasksLoading = signal(true);
+    public myBidsLoading = signal(false);
 
     public selectedTabIndex = signal(0);
 
     constructor() {
-        // Use an effect() to react to tab changes
+        // This effect runs when selectedTabIndex or user() changes
         effect(
             () => {
-                if (this.selectedTabIndex() === 0 && !this.allTasks()) {
+                const tabIndex = this.selectedTabIndex();
+                const currentUser = this.user(); // Get the user value
+
+                // 1. "All Gigs" tab is clicked
+                if (tabIndex === 0 && !this.allTasks()) {
                     this.loadAllTasks();
                 }
 
-                if (this.selectedTabIndex() === 1 && this.user() && !this.myTasks()) {
+                // 2. "My Gigs" tab is clicked
+                if (tabIndex === 1 && currentUser && !this.myTasks()) {
                     this.loadMyTasks();
                 }
-                // ---
+
+                // 3. "My Bids" tab is clicked
+                if (tabIndex === 2 && currentUser && !this.myBids()) {
+                    this.loadMyBids();
+                }
             },
             { allowSignalWrites: true }
         );
@@ -94,6 +108,20 @@ export class Dashboard {
             error: (err) => {
                 console.error(err);
                 this.myTasksLoading.set(false);
+            },
+        });
+    }
+
+    private loadMyBids(): void {
+        this.myBidsLoading.set(true);
+        this.apiService.getMyBids().subscribe({
+            next: (data) => {
+                this.myBids.set(data);
+                this.myBidsLoading.set(false);
+            },
+            error: (err) => {
+                console.error(err);
+                this.myBidsLoading.set(false);
             },
         });
     }

@@ -1,28 +1,40 @@
-<mat-toolbar color="primary">
-    <span>GigTasker</span>
-
-    <span style="flex: 1 1 auto"></span>
-
-    @if (authService.isAuthenticated()) {
-    <a mat-button routerLink="/dashboard">
-        <mat-icon>dashboard</mat-icon>
-        Dashboard
-    </a>
-    <button mat-button (click)="authService.logout()">
-        <mat-icon>logout</mat-icon>
-        Log Out
-    </button>
+<div class="app-container" [class.fade-in]="!isLoading()">
+    @if (isLoading()) {
+    <!-- LANDING / LOADER PAGE -->
+    <div class="landing-screen">
+        <h1 class="logo-text">GigTasker</h1>
+        <div class="loader-bar">
+            <div class="progress"></div>
+        </div>
+    </div>
     } @else {
-    <button mat-button (click)="authService.register()">
-        <mat-icon>person_add</mat-icon>
-        Register
-    </button>
+    <!-- MAIN APP CONTENT -->
+    <mat-toolbar color="primary">
+        <span>GigTasker</span>
 
-    <button mat-button (click)="authService.login()">
-        <mat-icon>login</mat-icon>
-        Log In
-    </button>
+        <span style="flex: 1 1 auto"></span>
+
+        @if (authService.isAuthenticated()) {
+        <a mat-button routerLink="/dashboard">
+            <mat-icon>dashboard</mat-icon>
+            Dashboard
+        </a>
+        <button mat-button (click)="authService.logout()">
+            <mat-icon>logout</mat-icon>
+            Log Out
+        </button>
+        } @else {
+        <button mat-button routerLink="/register">
+            <mat-icon>person_add</mat-icon>
+            Register
+        </button>
+        <button mat-button routerLink="/login">
+            <mat-icon>login</mat-icon>
+            Log In
+        </button>
+        }
+    </mat-toolbar>
+
+    <router-outlet />
     }
-</mat-toolbar>
-
-<router-outlet />
+</div>
