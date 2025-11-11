@@ -58,4 +58,14 @@ export class ApiService {
     public getMyBids(): Observable<MyBidDetailDTO[]> {
         return this.http.get<MyBidDetailDTO[]>(`${this.API_URL}/api/bids/my-bids`);
     }
+
+    // --- ADD THESE TWO NEW METHODS ---
+    public getAllUsers(): Observable<UserDTO[]> {
+        // We'll create this "get all" endpoint next
+        return this.http.get<UserDTO[]>(`${this.API_URL}/api/users`);
+    }
+
+    public promoteUser(userId: number): Observable<void> {
+        return this.http.post<void>(`${this.API_URL}/api/users/${userId}/promote`, {});
+    }
 }

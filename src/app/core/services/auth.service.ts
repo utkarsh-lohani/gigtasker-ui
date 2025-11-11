@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from '../../auth.config';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
     providedIn: 'root',
@@ -10,6 +11,7 @@ export class AuthService {
 
     // We use a Signal to hold the authentication state (Zoneless!)
     public isAuthenticated = signal(false);
+    public isAdmin = signal(false);
 
     constructor() {
         // This tells the library to use our config
@@ -24,11 +26,13 @@ export class AuthService {
         if (this.oauthService.hasValidAccessToken()) {
             // User is already logged in
             this.isAuthenticated.set(true);
+            this.checkAdminRole(); // Check if User has Admin Role
         } else {
             // This is a "silent refresh" check
             this.oauthService.events.subscribe((e) => {
                 if (e.type === 'token_received') {
                     this.isAuthenticated.set(true);
+                    this.checkAdminRole(); // Check if User has Admin Role
                 }
             });
         }
@@ -87,5 +91,31 @@ export class AuthService {
         //    We told our backend (notification-service) to use 'email'
         //    so we *must* use 'email' here.
         return (claims as any)['email'];
+    }
+
+    private checkAdminRole(): void {
+        const token = this.oauthService.getAccessToken();
+        if (!token) return;
+
+        try {
+            // Decode the token payload
+            const decodedToken: any = jwtDecode(token);
+
+            // Check for the "roles" array inside "realm_access"
+            // This path is specific to Keycloak
+            const realmManagementRoles =
+                decodedToken.resource_access?.['realm-management']?.roles || [];
+
+            // Now we check this *new* array for our admin roles
+            // A user is an "App Admin" if they can view AND manage users.
+            const hasViewUsers = realmManagementRoles.includes('view-users');
+            const hasManageUsers = realmManagementRoles.includes('manage-users');
+
+            // Set our signal
+            this.isAdmin.set(hasViewUsers && hasManageUsers);
+        } catch (err) {
+            console.error('Failed to decode token', err);
+            this.isAdmin.set(false);
+        }
     }
 }
