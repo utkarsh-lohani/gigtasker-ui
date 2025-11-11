@@ -5,6 +5,7 @@
 } @else if (bids && bids.length > 0) {
 
 <table mat-table [dataSource]="bids" class="mat-elevation-z8">
+    <!-- Task Title Column (with a link!) -->
     <ng-container matColumnDef="taskTitle">
         <th mat-header-cell *matHeaderCellDef>Gig</th>
         <td mat-cell *matCellDef="let bid">
@@ -12,11 +13,13 @@
         </td>
     </ng-container>
 
+    <!-- My Bid Column -->
     <ng-container matColumnDef="myBid">
         <th mat-header-cell *matHeaderCellDef>My Bid</th>
         <td mat-cell *matCellDef="let bid">${{ bid.amount }}</td>
     </ng-container>
 
+    <!-- My Bid Status Column (The "Catchy" Part) -->
     <ng-container matColumnDef="bidStatus">
         <th mat-header-cell *matHeaderCellDef>My Bid Status</th>
         <td mat-cell *matCellDef="let bid">
@@ -33,9 +36,20 @@
         </td>
     </ng-container>
 
+    <!-- Task Status Column -->
     <ng-container matColumnDef="taskStatus">
         <th mat-header-cell *matHeaderCellDef>Gig Status</th>
         <td mat-cell *matCellDef="let bid">{{ bid.taskStatus | titlecase }}</td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>View</th>
+        <td mat-cell *matCellDef="let bid">
+            <button mat-icon-button color="primary" (click)="viewTask(bid.taskId)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -43,6 +57,7 @@
 </table>
 
 } @else {
+<!-- This is the "Empty State" -->
 <div class="empty-state">
     <mat-icon>work_history</mat-icon>
     <p>You haven't placed any bids yet.</p>

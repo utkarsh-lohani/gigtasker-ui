@@ -1,4 +1,3 @@
-/* src/app/my-bids/my-bids.component.scss */
 table {
     width: 100%;
 }
@@ -20,9 +19,7 @@ table {
     height: 40px;
 }
 
-/* These are the "catchy" chip colors.
-  They are scoped to this component.
-*/
+/* "Catchy" chip colors */
 .mat-mdc-chip.bid-accepted {
     background-color: #c8e6c9; // A light green
     color: #256029;

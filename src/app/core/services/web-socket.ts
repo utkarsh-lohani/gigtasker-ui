@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { RxStomp } from '@stomp/rx-stomp';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -9,13 +10,37 @@ import { map } from 'rxjs/operators';
 export class WebSocketService extends RxStomp {
     constructor() {
         super(); // Initialize the RxStomp parent
+    }
+
+    /**
+     * Call this *after* the user is logged in.
+     * It configures and activates the WebSocket connection.
+     */
+    public connect(authService: AuthService): void {
+        if (this.active) {
+            return; // Already connected
+        }
+
+        const token = authService.getToken();
+        if (!token) {
+            console.error('WebSocket: No auth token found. Cannot connect.');
+            return;
+        }
+
+        // Configure the connection
         this.configure({
-            // This is the "front door" we defined in WebSocketConfig.java
-            brokerURL: 'ws://localhost:9090/ws-notify',
+            brokerURL: 'ws://localhost:9090/ws-notify', // Connect to the gateway
+
+            // Send the Keycloak token in the STOMP connection headers
+            connectHeaders: {
+                Authorization: `Bearer ${token}`,
+            },
+            // ---
+
             reconnectDelay: 5000,
         });
 
-        // Start the connection
+        // 2. Start the connection
         this.activate();
     }
 

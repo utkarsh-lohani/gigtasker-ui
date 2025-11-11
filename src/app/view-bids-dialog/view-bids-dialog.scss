@@ -1,20 +1,28 @@
 .bid-item {
-    height: auto !important; // Allow item to grow
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+  height: auto !important; /* Allow item to grow */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
 }
 
 .proposal-text {
-    white-space: normal; // Allow text to wrap
-    line-height: 1.4;
-    padding-top: 5px;
+  white-space: normal; /* Allow text to wrap */
+  line-height: 1.4;
+  padding-top: 5px;
+  font-style: italic;
+  color: #333;
 }
 
-.empty-state,
-.loader-state {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 150px;
-    color: #777;
+.empty-state, .loader-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+  color: #777;
+}
+
+// Give the "Accept" button a little space
+[matListItemMeta] button {
+  margin-left: 1rem;
 }

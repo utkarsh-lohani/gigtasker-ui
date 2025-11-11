@@ -45,7 +45,7 @@ export class AuthService {
     }
 
     public register(): void {
-        // We will build the registration URL ourselves.
+        // We will build the registration URL.
 
         // 1. Guard against missing config
         const clientId = this.oauthService.clientId;
@@ -72,5 +72,20 @@ export class AuthService {
 
     public getToken(): string {
         return this.oauthService.getAccessToken();
+    }
+
+    public getUsername(): string {
+        // 1. Get the claims (the "payload") from the ID token
+        const claims = this.oauthService.getIdentityClaims();
+
+        if (!claims) {
+            console.error('AuthService: Cannot get username, claims are null.');
+            return '';
+        }
+
+        // 2. Return the 'email' claim.
+        //    We told our backend (notification-service) to use 'email'
+        //    so we *must* use 'email' here.
+        return (claims as any)['email'];
     }
 }
