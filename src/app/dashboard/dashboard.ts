@@ -67,8 +67,7 @@ export class Dashboard {
                 if (tabIndex === 2 && currentUser && !this.myBids()) {
                     this.loadMyBids();
                 }
-            },
-            { allowSignalWrites: true }
+            }
         );
     }
 
