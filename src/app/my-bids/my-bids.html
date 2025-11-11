@@ -1,0 +1,50 @@
+@if (isLoading) {
+<div class="loader-state">
+    <mat-spinner diameter="50"></mat-spinner>
+</div>
+} @else if (bids && bids.length > 0) {
+
+<table mat-table [dataSource]="bids" class="mat-elevation-z8">
+    <ng-container matColumnDef="taskTitle">
+        <th mat-header-cell *matHeaderCellDef>Gig</th>
+        <td mat-cell *matCellDef="let bid">
+            <a [routerLink]="['/tasks', bid.taskId]">{{ bid.taskTitle }}</a>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="myBid">
+        <th mat-header-cell *matHeaderCellDef>My Bid</th>
+        <td mat-cell *matCellDef="let bid">${{ bid.amount }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="bidStatus">
+        <th mat-header-cell *matHeaderCellDef>My Bid Status</th>
+        <td mat-cell *matCellDef="let bid">
+            <mat-chip-listbox>
+                <mat-chip
+                    [ngClass]="{
+                        'bid-accepted': bid.bidStatus === 'ACCEPTED',
+                        'bid-rejected': bid.bidStatus === 'REJECTED'
+                    }"
+                >
+                    {{ bid.bidStatus | titlecase }}
+                </mat-chip>
+            </mat-chip-listbox>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="taskStatus">
+        <th mat-header-cell *matHeaderCellDef>Gig Status</th>
+        <td mat-cell *matCellDef="let bid">{{ bid.taskStatus | titlecase }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+} @else {
+<div class="empty-state">
+    <mat-icon>work_history</mat-icon>
+    <p>You haven't placed any bids yet.</p>
+</div>
+}
