@@ -19,6 +19,12 @@
             <mat-icon>dashboard</mat-icon>
             Dashboard
         </a>
+        @if (authService.isAdmin()) {
+        <a mat-button routerLink="/admin">
+            <mat-icon>admin_panel_settings</mat-icon>
+            Admin
+        </a>
+        }
         <button mat-button (click)="authService.logout()">
             <mat-icon>logout</mat-icon>
             Log Out
