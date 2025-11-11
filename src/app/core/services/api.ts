@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserDTO } from './models/user.model';
-import { TaskDTO } from './models/task.model';
-import { BidDetailDTO, BidDTO, MyBidDetailDTO } from './models/bid.model';
+import { UserDTO } from '../models/user.model';
+import { TaskDTO } from '../models/task.model';
+import { BidDetailDTO, BidDTO, MyBidDetailDTO } from '../models/bid.model';
 
 @Injectable({
     providedIn: 'root',

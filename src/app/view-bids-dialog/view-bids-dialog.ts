@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApiService } from '../core/api';
+import { ApiService } from '../core/services/api';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { WebSocketService } from '../core/services/web-socket';
+import { BidDetailDTO, BidDTO } from '../core/models/bid.model';
 
 @Component({
     selector: 'app-view-bids-dialog',
@@ -23,15 +24,50 @@ import { Router } from '@angular/router';
     templateUrl: './view-bids-dialog.html',
     styleUrl: './view-bids-dialog.scss',
 })
-export class ViewBidsDialog {
+export class ViewBidsDialog implements OnInit {
     private readonly apiService = inject(ApiService);
     public data: { taskId: number } = inject(MAT_DIALOG_DATA);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly wsService = inject(WebSocketService);
     public dialogRef = inject(MatDialogRef<ViewBidsDialog>);
 
     // Fetch the bids *inside* the dialog when it's created
-    public bids = toSignal(this.apiService.getBidDetailsForTask(this.data.taskId));
+    public bids = signal<BidDetailDTO[] | undefined>(undefined);
+    public isLoading = signal(true);
+
+    ngOnInit(): void {
+        this.loadBids();
+
+        const topic = `/topic/task/${this.data.taskId}/bids`;
+        this.wsService.watchJson<BidDTO>(topic).subscribe({
+            next: (newBid) => {
+                console.log('LIVE BID RECEIVED!', newBid);
+                this.snackBar.open(`New bid from ${newBid.bidderUserId}!`, 'Reloading...', {
+                    duration: 2000,
+                });
+
+                // Just re-fetch the whole list. This is the simplest,
+                // most robust way to get the new, "data-zipped" list.
+                this.loadBids();
+            },
+            error: (err) => console.error(`WS error on ${topic}:`, err),
+        });
+    }
+
+    public loadBids(): void {
+        this.isLoading.set(true);
+        this.apiService.getBidDetailsForTask(this.data.taskId).subscribe({
+            next: (data) => {
+                this.bids.set(data);
+                this.isLoading.set(false);
+            },
+            error: (err) => {
+                console.error(err);
+                this.isLoading.set(false);
+            },
+        });
+    }
 
     public acceptBid(bidId: number): void {
         this.apiService.acceptBid(bidId).subscribe({

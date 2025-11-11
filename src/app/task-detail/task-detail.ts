@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ApiService } from '../core/api';
+import { ApiService } from '../core/services/api';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
 import { BidDialog } from '../bid-dialog/bid-dialog';

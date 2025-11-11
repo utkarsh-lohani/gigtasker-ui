@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, QueryList, signal, ViewChildren } from '@angular/core';
-import { ApiService } from '../core/api';
+import { ApiService } from '../core/services/api';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TaskDTO } from '../core/models/task.model';
 import { MyBids } from '../my-bids/my-bids';
 import { MyBidDetailDTO } from '../core/models/bid.model';
+import { WebSocketService } from '../core/services/web-socket';
 
 @Component({
     selector: 'app-dashboard',
@@ -28,6 +29,7 @@ import { MyBidDetailDTO } from '../core/models/bid.model';
 })
 export class Dashboard {
     private readonly apiService = inject(ApiService);
+    private readonly wsService = inject(WebSocketService);
 
     public user = toSignal(this.apiService.getMe());
 
@@ -48,27 +50,27 @@ export class Dashboard {
 
     constructor() {
         // This effect runs when selectedTabIndex or user() changes
-        effect(
-            () => {
-                const tabIndex = this.selectedTabIndex();
-                const currentUser = this.user(); // Get the user value
+        effect(() => {
+            const tabIndex = this.selectedTabIndex();
+            const currentUser = this.user(); // Get the user value
 
-                // 1. "All Gigs" tab is clicked
-                if (tabIndex === 0 && !this.allTasks()) {
-                    this.loadAllTasks();
-                }
-
-                // 2. "My Gigs" tab is clicked
-                if (tabIndex === 1 && currentUser && !this.myTasks()) {
-                    this.loadMyTasks();
-                }
-
-                // 3. "My Bids" tab is clicked
-                if (tabIndex === 2 && currentUser && !this.myBids()) {
-                    this.loadMyBids();
-                }
+            // 1. "All Gigs" tab is clicked
+            if (tabIndex === 0 && !this.allTasks()) {
+                this.loadAllTasks();
             }
-        );
+
+            // 2. "My Gigs" tab is clicked
+            if (tabIndex === 1 && currentUser && !this.myTasks()) {
+                this.loadMyTasks();
+            }
+
+            // 3. "My Bids" tab is clicked
+            if (tabIndex === 2 && currentUser && !this.myBids()) {
+                this.loadMyBids();
+            }
+        });
+
+        this.listenForNewTasks();
     }
 
     // This method is called by the (taskCreated) event
@@ -122,6 +124,22 @@ export class Dashboard {
                 console.error(err);
                 this.myBidsLoading.set(false);
             },
+        });
+    }
+
+    private listenForNewTasks(): void {
+        this.wsService.watchJson<TaskDTO>('/topic/tasks').subscribe({
+            next: (newTask) => {
+                // A new task just came in
+                // We'll just add it to the top of our "All Tasks" list.
+                this.allTasks.update((currentTasks) => {
+                    // Add the new task to the beginning of the list
+                    return [newTask, ...(currentTasks || [])];
+                });
+
+                // (We could also show a snackbar here: "A new gig was just posted!")
+            },
+            error: (err) => console.error('WS error on /topic/tasks:', err),
         });
     }
 }

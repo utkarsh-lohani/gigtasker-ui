@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from '../auth.config';
+import { authConfig } from '../../auth.config';
 
 @Injectable({
     providedIn: 'root',

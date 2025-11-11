@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from '../core/api';
+import { ApiService } from '../core/services/api';
 
 @Component({
     selector: 'app-bid-dialog',
