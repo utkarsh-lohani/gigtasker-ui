@@ -1,31 +1,37 @@
 <h2 mat-dialog-title>Bids Received for This Gig</h2>
 
 <mat-dialog-content>
-    @if (bids()) { @if (bids()!.length > 0) {
-
+    @if (isLoading()) {
+    <div class="loader-state">
+        <mat-spinner diameter="50"></mat-spinner>
+    </div>
+    } @else if (bids() && bids()!.length > 0) {
     <mat-list role="list">
         @for (bid of bids(); track bid.bidId) {
-
         <mat-list-item role="listitem" class="bid-item">
             <span matListItemTitle>{{ bid.bidderName }} - **${{ bid.amount }}**</span>
             <span matListItemLine class="proposal-text">{{ bid.proposal }}</span>
             <span matListItemMeta>
+                @if(bid.status === 'PENDING') {
                 <button mat-flat-button color="accent" (click)="acceptBid(bid.bidId)">
                     <mat-icon>gavel</mat-icon>
                     Accept
                 </button>
+                } @else if (bid.status === 'ACCEPTED') {
+                <button mat-icon-button color="primary" disabled title="Accepted">
+                    <mat-icon>check_circle</mat-icon>
+                </button>
+                } @else {
+                <button mat-icon-button disabled title="Rejected">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+                }
             </span>
         </mat-list-item>
-
         }
     </mat-list>
-
     } @else {
     <p class="empty-state">No bids have been placed yet.</p>
-    } } @else {
-    <div class="loader-state">
-        <mat-spinner diameter="50"></mat-spinner>
-    </div>
     }
 </mat-dialog-content>
 

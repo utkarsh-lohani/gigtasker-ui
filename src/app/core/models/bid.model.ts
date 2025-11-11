@@ -1,4 +1,4 @@
-import { TaskStatus } from "./task.model";
+import { TaskStatus } from './task.model';
 
 export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
 
@@ -17,6 +17,16 @@ export interface BidDetailDTO {
     status: BidStatus;
     bidderUserId: number;
     bidderName: string;
+}
+
+export interface MyBidDetailDTO {
+    bidId: number;
+    amount: number;
+    proposal: string;
+    bidStatus: BidStatus;
+    taskId: number;
+    taskTitle: string;
+    taskStatus: TaskStatus;
 }
 
 export interface MyBidDetailDTO {
