@@ -68,4 +68,8 @@ export class ApiService {
     public promoteUser(userId: number): Observable<void> {
         return this.http.post<void>(`${this.API_URL}/api/users/${userId}/promote`, {});
     }
+
+    public deleteUser(userId: number): Observable<void> {
+        return this.http.delete<void>(`${this.API_URL}/api/users/${userId}`);
+    }
 }

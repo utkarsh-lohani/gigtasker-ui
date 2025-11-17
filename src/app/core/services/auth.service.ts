@@ -103,16 +103,13 @@ export class AuthService {
 
             // Check for the "roles" array inside "realm_access"
             // This path is specific to Keycloak
-            const realmManagementRoles =
-                decodedToken.resource_access?.['realm-management']?.roles || [];
+            const realmManagementRoles = decodedToken.realm_access?.['roles'] || [];
 
             // Now we check this *new* array for our admin roles
-            // A user is an "App Admin" if they can view AND manage users.
-            const hasViewUsers = realmManagementRoles.includes('view-users');
-            const hasManageUsers = realmManagementRoles.includes('manage-users');
+            const hasAdminRole = realmManagementRoles.includes('ROLE_ADMIN');
 
             // Set our signal
-            this.isAdmin.set(hasViewUsers && hasManageUsers);
+            this.isAdmin.set(hasAdminRole);
         } catch (err) {
             console.error('Failed to decode token', err);
             this.isAdmin.set(false);
