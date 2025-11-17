@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>
+    <mat-icon style="vertical-align: bottom; margin-right: 8px">manage_accounts</mat-icon>
+    Roles for {{ data.username }}
+</h2>
+
+<mat-dialog-content>
+    <div class="roles-container">
+        @if (data.roles.length > 0) {
+        <mat-chip-set class="roles-list">
+            @for (role of data.roles; track role) { @if (role === 'ADMIN') {
+            <mat-chip highlighted color="accent">
+                <mat-icon matChipAvatar>security</mat-icon>
+                {{ role }}
+            </mat-chip>
+            } @else {
+            <mat-chip>
+                <mat-icon matChipAvatar>verified</mat-icon>
+                {{ role }}
+            </mat-chip>
+            } }
+        </mat-chip-set>
+        } @else {
+        <p style="font-style: italic; color: #777">No roles assigned.</p>
+        }
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()">Close</button>
+</mat-dialog-actions>
