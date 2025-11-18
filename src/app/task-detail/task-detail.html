@@ -15,7 +15,7 @@
             <p>{{ task()?.description }}</p>
         </mat-card-content>
         <mat-card-actions>
-            @if (task() && currentUser()) { @if (isOwner()) {
+            @if (task()?.status === 'OPEN') { @if (isOwner()) {
             <button mat-flat-button color="accent" (click)="openViewBidsDialog()">
                 <mat-icon>visibility</mat-icon>
                 View Bids
@@ -24,7 +24,24 @@
             <button mat-flat-button color="primary" (click)="openBidDialog()">
                 Bid on this Gig
             </button>
-            } } @else { }
+            } } @else if (task()?.status === 'ASSIGNED') { @if (isWorker()) {
+            <button mat-flat-button color="primary" (click)="markAsCompleted()">
+                <mat-icon>check_circle</mat-icon>
+                Mark as Done
+            </button>
+            } @else if (isOwner()) {
+            <button mat-stroked-button disabled>
+                <mat-icon>hourglass_top</mat-icon>
+                Work in Progress...
+            </button>
+            } @else {
+            <button mat-button disabled>Gig Assigned</button>
+            } } @else if (task()?.status === 'COMPLETED') {
+            <button mat-button disabled class="completed-badge">
+                <mat-icon>task_alt</mat-icon>
+                COMPLETED
+            </button>
+            }
         </mat-card-actions>
     </mat-card>
     } @else {

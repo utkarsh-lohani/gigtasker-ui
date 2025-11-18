@@ -136,8 +136,6 @@ export class Dashboard {
                     // Add the new task to the beginning of the list
                     return [newTask, ...(currentTasks || [])];
                 });
-
-                // (We could also show a snackbar here: "A new gig was just posted!")
             },
             error: (err) => console.error('WS error on /topic/tasks:', err),
         });
