@@ -72,4 +72,8 @@ export class ApiService {
     public deleteUser(userId: number): Observable<void> {
         return this.http.delete<void>(`${this.API_URL}/api/users/${userId}`);
     }
+
+    public completeTask(taskId: number): Observable<TaskDTO> {
+        return this.http.put<TaskDTO>(`${this.API_URL}/api/tasks/${taskId}/complete`, {});
+    }
 }

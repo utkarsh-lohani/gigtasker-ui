@@ -4,13 +4,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/services/api';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
 import { BidDialog } from '../bid-dialog/bid-dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewBidsDialog } from '../view-bids-dialog/view-bids-dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TaskStatusEnum } from '../core/models/task.model';
 
 @Component({
     selector: 'app-task-detail',
@@ -28,6 +30,8 @@ import { ViewBidsDialog } from '../view-bids-dialog/view-bids-dialog';
 export class TaskDetail {
     private readonly route = inject(ActivatedRoute);
     private readonly apiService = inject(ApiService);
+    private readonly router = inject(Router);
+    private readonly snackBar = inject(MatSnackBar);
     public dialog = inject(MatDialog);
 
     // This is a "reactive" signal
@@ -79,5 +83,36 @@ export class TaskDetail {
             width: '600px',
             data: { taskId: taskId }, // Pass in the task ID
         });
+    }
+
+    public isWorker = computed(() => {
+        const t = this.task();
+        const u = this.currentUser();
+
+        // Safety check: Data must exist
+        if (!t || !u) return false;
+
+        // Logic: The task must be ASSIGNED, and the assignedUserId must match ME.
+        return t.status === TaskStatusEnum.ASSIGNED && t.posterUserId !== u.id && t.assignedUserId === u.id;
+    });
+
+    public markAsCompleted(): void {
+        const t = this.task();
+        if (!t) return;
+
+        if (confirm('Are you sure you want to mark this gig as finished?')) {
+            this.apiService.completeTask(t.id).subscribe({
+                next: () => {
+                    this.snackBar.open('Gig marked as COMPLETED! Great job.', 'OK', {
+                        duration: 5000,
+                    });
+                    globalThis.location.reload();
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.snackBar.open('Failed to complete task.', 'Close', { duration: 3000 });
+                },
+            });
+        }
     }
 }

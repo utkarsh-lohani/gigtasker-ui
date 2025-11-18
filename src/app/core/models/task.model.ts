@@ -1,8 +1,16 @@
-export type TaskStatus = 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export enum TaskStatusEnum {
+    OPEN = 'OPEN',
+    ASSIGNED = 'ASSIGNED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED',
+}
+
 export interface TaskDTO {
     id: number;
     title: string;
     description: string;
     posterUserId: number;
-    status: string;
+    assignedUserId: number;
+    status: TaskStatusEnum;
 }
