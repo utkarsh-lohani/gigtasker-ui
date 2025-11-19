@@ -8,8 +8,34 @@
     <mat-card>
         <mat-card-header>
             <mat-card-title>{{ task()?.title }}</mat-card-title>
-            <mat-card-subtitle>Status: {{ task()?.status }}</mat-card-subtitle>
+            @if(poster()) {
+            <mat-card-subtitle>
+                Posted by: {{ poster()?.firstName }} {{ poster()?.lastName }}
+            </mat-card-subtitle>
+            }
         </mat-card-header>
+        <mat-card-content>
+            <div class="task-meta-chips">
+                <mat-chip [class.status-open]="task()?.status === 'OPEN'">
+                    {{ task()?.status | titlecase }}
+                </mat-chip>
+
+                @if (task()?.deadline && task()?.status !== 'COMPLETED') {
+                <mat-chip color="warn" highlighted>
+                    <mat-icon matChipAvatar>timer</mat-icon>
+                    Due: {{ task()?.deadline | date : 'mediumDate' }}
+                </mat-chip>
+                } @if ((task()?.minPay || task()?.maxPay) && task()?.status !== 'COMPLETED') {
+                <mat-chip color="accent" highlighted>
+                    <mat-icon matChipAvatar>attach_money</mat-icon>
+                    Range: ${{ task()?.minPay }} - ${{ task()?.maxPay }}
+                </mat-chip>
+                }
+            </div>
+            <hr />
+            <h3>Description</h3>
+            <p>{{ task()?.description }}</p>
+        </mat-card-content>
         <mat-card-content>
             <h3>Description</h3>
             <p>{{ task()?.description }}</p>

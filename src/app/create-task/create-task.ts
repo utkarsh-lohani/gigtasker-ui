@@ -10,6 +10,8 @@ import { TaskDTO } from '../core/models/task.model';
 import { ApiService } from '../core/services/api';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserDTO } from '../core/models/user.model';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
     selector: 'app-create-task',
@@ -21,6 +23,8 @@ import { UserDTO } from '../core/models/user.model';
         MatInputModule,
         MatButtonModule,
         MatIconModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
     ],
     templateUrl: './create-task.html',
     styleUrl: './create-task.scss',
@@ -31,7 +35,6 @@ export class CreateTask {
     private readonly snackBar = inject(MatSnackBar);
 
     @Input() currentUser: UserDTO | undefined;
-
     @Output() taskCreated = new EventEmitter<void>();
 
     // This lets us grab the stepper from the HTML to control it
@@ -43,17 +46,27 @@ export class CreateTask {
     step2Group = this.fb.group({
         description: [''],
     });
+    step3Group = this.fb.group({
+        deadline: [null as Date | null, Validators.required],
+        minPay: [null as number | null, [Validators.min(0)]],
+        maxPay: [null as number | null, [Validators.min(0)]],
+        maxBidsPerUser: [3, [Validators.required, Validators.min(1), Validators.max(10)]],
+    });
 
     public saveTask(): void {
         if (this.step1Group.invalid || !this.currentUser) {
             // Don't submit if form is invalid OR we don't know who the user is
-            return
-        };
+            return;
+        }
 
         const taskData: Partial<TaskDTO> = {
             title: this.step1Group.value.title || '',
             description: this.step2Group.value.description || '',
-            posterUserId: this.currentUser.id
+            posterUserId: this.currentUser.id,
+            deadline: this.step3Group.value.deadline!,
+            minPay: this.step3Group.value.minPay || undefined,
+            maxPay: this.step3Group.value.maxPay || undefined,
+            maxBidsPerUser: this.step3Group.value.maxBidsPerUser || 3,
         };
 
         this.apiService.createTask(taskData).subscribe({
@@ -63,10 +76,10 @@ export class CreateTask {
                     duration: 3000, // 3 seconds
                 });
                 // 2. Reset the stepper
-                this.stepper.reset();     // This resets the stepper UI
-                this.step1Group.reset();  // This clears the form data
-                this.step2Group.reset();  // This clears the form data
-
+                this.stepper.reset(); // This resets the stepper UI
+                this.step1Group.reset(); // This clears the form data
+                this.step2Group.reset(); // This clears the form data
+                this.step3Group.reset({maxBidsPerUser: 3}); // This clears the form data
                 this.taskCreated.emit();
             },
             error: (err) => {

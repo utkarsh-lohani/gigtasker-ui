@@ -13,4 +13,8 @@ export interface TaskDTO {
     posterUserId: number;
     assignedUserId: number;
     status: TaskStatusEnum;
+    deadline: Date;
+    minPay: number;
+    maxPay: number;
+    maxBidsPerUser: number;
 }
