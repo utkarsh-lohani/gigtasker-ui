@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,8 @@ import { ViewBidsDialog } from '../view-bids-dialog/view-bids-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TaskStatusEnum } from '../core/models/task.model';
 import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
+import { WebSocketService } from '../core/services/web-socket';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
     selector: 'app-task-detail',
@@ -24,16 +26,37 @@ import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-d
         MatProgressSpinnerModule,
         MatIconModule,
         MatButtonModule,
+        MatChipsModule,
     ],
     templateUrl: './task-detail.html',
     styleUrl: './task-detail.scss',
 })
-export class TaskDetail {
+export class TaskDetail implements OnInit {
     private readonly route = inject(ActivatedRoute);
     private readonly apiService = inject(ApiService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly wsService = inject(WebSocketService);
     public dialog = inject(MatDialog);
+
+    ngOnInit(): void {
+        this.route.paramMap.subscribe((params) => {
+            const id = params.get('id');
+            if (id) {
+                this.listenForUpdates(id);
+            }
+        });
+    }
+
+    private listenForUpdates(taskId: string) {
+        // Listen to the specific task channel
+        this.wsService.watch(`/topic/task/${taskId}`).subscribe((msg) => {
+            if (msg.body === 'STATUS_CHANGED') {
+                // The backend says something changed. Reload
+                globalThis.location.reload();
+            }
+        });
+    }
 
     // This is a "reactive" signal
     // 1. It watches the URL for the 'id' param.
@@ -72,7 +95,11 @@ export class TaskDetail {
 
         this.dialog.open(BidDialog, {
             width: '500px',
-            data: { taskId: task.id }, // Pass the Task ID to the dialog
+            data: {
+                taskId: task.id,
+                minPay: task.minPay,
+                maxPay: task.maxPay,
+            },
         });
     }
 
@@ -124,11 +151,12 @@ export class TaskDetail {
                         });
                         // Refresh logic goes here
                         this.router.navigate(['/dashboard']);
-                    }, error: () => {
+                    },
+                    error: () => {
                         this.snackBar.open('Failed to mark gig as completed.', 'OK', {
                             duration: 5000,
                         });
-                    }
+                    },
                 });
             }
         });
