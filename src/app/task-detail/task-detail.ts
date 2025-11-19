@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ViewBidsDialog } from '../view-bids-dialog/view-bids-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TaskStatusEnum } from '../core/models/task.model';
+import { ConfirmationDialog } from '../shared/confirmation-dialog/confirmation-dialog';
 
 @Component({
     selector: 'app-task-detail',
@@ -93,26 +94,43 @@ export class TaskDetail {
         if (!t || !u) return false;
 
         // Logic: The task must be ASSIGNED, and the assignedUserId must match ME.
-        return t.status === TaskStatusEnum.ASSIGNED && t.posterUserId !== u.id && t.assignedUserId === u.id;
+        return (
+            t.status === TaskStatusEnum.ASSIGNED &&
+            t.posterUserId !== u.id &&
+            t.assignedUserId === u.id
+        );
     });
 
     public markAsCompleted(): void {
         const t = this.task();
         if (!t) return;
 
-        if (confirm('Are you sure you want to mark this gig as finished?')) {
-            this.apiService.completeTask(t.id).subscribe({
-                next: () => {
-                    this.snackBar.open('Gig marked as COMPLETED! Great job.', 'OK', {
-                        duration: 5000,
-                    });
-                    globalThis.location.reload();
-                },
-                error: (err) => {
-                    console.error(err);
-                    this.snackBar.open('Failed to complete task.', 'Close', { duration: 3000 });
-                },
-            });
-        }
+        const dialogRef = this.dialog.open(ConfirmationDialog, {
+            width: '400px',
+            data: {
+                title: 'Mark as Done?',
+                message: 'Are you sure you have finished all work for this gig?',
+                confirmText: 'Yes, Complete it',
+            },
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                // User clicked Yes
+                this.apiService.completeTask(t.id).subscribe({
+                    next: () => {
+                        this.snackBar.open('Gig marked as COMPLETED!', 'Great!', {
+                            duration: 5000,
+                        });
+                        // Refresh logic goes here
+                        this.router.navigate(['/dashboard']);
+                    }, error: () => {
+                        this.snackBar.open('Failed to mark gig as completed.', 'OK', {
+                            duration: 5000,
+                        });
+                    }
+                });
+            }
+        });
     }
 }
