@@ -23,6 +23,8 @@ export class AuthService {
         // This loads the OIDC discovery document
         await this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
+        this.oauthService.setupAutomaticSilentRefresh();
+
         if (this.oauthService.hasValidAccessToken()) {
             // User is already logged in
             this.isAuthenticated.set(true);
