@@ -36,6 +36,12 @@ export class AuthService {
                     this.isAuthenticated.set(true);
                     this.checkAdminRole(); // Check if User has Admin Role
                 }
+                if (e.type === 'token_refresh_error') {
+                    console.error('[AuthService] Token Refresh Failed!', e);
+                }
+                if (e.type === 'session_terminated') {
+                    console.warn('[AuthService] Session Terminated event received');
+                }
             });
         }
     }
@@ -46,8 +52,35 @@ export class AuthService {
     }
 
     public logout(): void {
-        this.oauthService.logOut();
-        this.isAuthenticated.set(false);
+        // 1. Get the ID Token (required by Keycloak for redirect)
+        const idToken = this.oauthService.getIdToken();
+
+        // 2. Get the logout endpoint from the discovery document
+        const logoutUrl = this.oauthService.logoutUrl;
+
+        // 3. Get your redirect URI (where you want to go after logout)
+        const postLogoutRedirectUri = globalThis.location.origin; // http://localhost:4200
+
+        if (idToken && logoutUrl) {
+            // 4. Construct the OIDC-compliant URL manually
+            const url = `${logoutUrl}?id_token_hint=${idToken}&post_logout_redirect_uri=${encodeURIComponent(
+                postLogoutRedirectUri
+            )}`;
+
+            // 5. Clear local state
+            this.oauthService.logOut(true); // "true" means "no remote call", since we do it ourselves
+            this.isAuthenticated.set(false);
+            this.isAdmin.set(false);
+
+            // 6. Redirect the browser
+            globalThis.location.href = url;
+        } else {
+            // Fallback: Just clear local state if we can't notify Keycloak
+            this.oauthService.logOut();
+            this.isAuthenticated.set(false);
+            this.isAdmin.set(false);
+            globalThis.location.reload();
+        }
     }
 
     public register(): void {

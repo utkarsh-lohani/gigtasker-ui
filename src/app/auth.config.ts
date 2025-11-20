@@ -7,18 +7,22 @@ export const authConfig: AuthConfig = {
     issuer: 'http://localhost:8180/realms/gigtasker',
 
     // 2. The URL Angular runs on
-    redirectUri: 'http://localhost:4200',
+    redirectUri: globalThis.location.origin,
 
     // 3. The "Client ID" you will create in Keycloak
     // We'll call it 'gigtasker-angular'
     clientId: 'gigtasker-angular',
 
     // 4. Standard OIDC scopes
-    scope: 'openid profile email',
+    scope: 'openid profile email offline_access',
+
+    postLogoutRedirectUri: 'http://localhost:4200',
 
     // 5. Use the modern "Code Flow + PKCE"
     responseType: 'code',
 
     // 6. Good for debugging
     showDebugInformation: true,
+    strictDiscoveryDocumentValidation: false, // Relax validation
+    skipIssuerCheck: true, // Important if docker networking confuses the issuer URL
 };
