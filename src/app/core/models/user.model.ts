@@ -5,4 +5,5 @@ export interface UserDTO {
     firstName: string;
     lastName: string;
     roles: string[];
+    keycloakId: string;
 }

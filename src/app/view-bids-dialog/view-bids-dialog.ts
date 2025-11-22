@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -14,13 +14,12 @@ import { BidDetailDTO, BidDTO } from '../core/models/bid.model';
 @Component({
     selector: 'app-view-bids-dialog',
     imports: [
-        CommonModule,
-        MatDialogModule,
-        MatListModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-    ],
+    MatDialogModule,
+    MatListModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule
+],
     templateUrl: './view-bids-dialog.html',
     styleUrl: './view-bids-dialog.scss',
 })

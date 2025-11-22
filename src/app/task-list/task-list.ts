@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-task-list',
-    imports: [CommonModule, MatTableModule, MatCardModule, MatProgressSpinnerModule, MatIconModule],
+    imports: [MatTableModule, MatCardModule, MatProgressSpinnerModule, MatIconModule],
     templateUrl: './task-list.html',
     styleUrl: './task-list.scss',
 })
