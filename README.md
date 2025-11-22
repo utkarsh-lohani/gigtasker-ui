@@ -1,6 +1,6 @@
 # 🚀 GigTasker UI
 
-> The "2025 Standard" Angular 20 (Zoneless) frontend for the GigTasker microservice platform.
+> The "2025 Standard" Angular 21 (Zoneless) frontend for the GigTasker microservice platform.
 
 This application is the "face" of the GigTasker ecosystem. It's a modern, high-performance, single-page application (SPA) built with a fully zoneless architecture. It handles user registration, login, task creation, bidding, and dashboard management by communicating with the secure `gigtasker-api-gateway`.
 
@@ -35,7 +35,7 @@ This application is the "face" of the GigTasker ecosystem. It's a modern, high-p
 
 ## 🛠️ Tech Stack
 
-* **Framework:** Angular 20+
+* **Framework:** Angular 21+
 * **Language:** TypeScript
 * **Styling:** SCSS (Sassy CSS)
 * **UI Kit:** Angular Material 19+
