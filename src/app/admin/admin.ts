@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,13 +15,12 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'app-admin',
     imports: [
-        CommonModule,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        MatChipsModule
-    ],
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatChipsModule
+],
     templateUrl: './admin.html',
     styleUrl: './admin.scss',
 })

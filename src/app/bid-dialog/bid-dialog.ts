@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,15 +10,14 @@ import { ApiService } from '../core/services/api';
 @Component({
     selector: 'app-bid-dialog',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
+        ReactiveFormsModule
     ],
     templateUrl: './bid-dialog.html',
-    styleUrl: './bid-dialog.scss',
+    styleUrls: ['./bid-dialog.scss'],
 })
 export class BidDialog {
     private readonly fb = inject(FormBuilder);

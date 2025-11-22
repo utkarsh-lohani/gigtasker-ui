@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, effect, inject, QueryList, signal, ViewChildren } from '@angular/core';
 import { ApiService } from '../core/services/api';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -16,14 +16,13 @@ import { WebSocketService } from '../core/services/web-socket';
 @Component({
     selector: 'app-dashboard',
     imports: [
-        CommonModule,
-        MatCardModule,
-        MatTabsModule,
-        CreateTask,
-        TaskList,
-        MatProgressSpinnerModule,
-        MyBids,
-    ],
+    MatCardModule,
+    MatTabsModule,
+    CreateTask,
+    TaskList,
+    MatProgressSpinnerModule,
+    MyBids
+],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss',
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,13 +9,12 @@ import { MatListModule } from '@angular/material/list';
 @Component({
     selector: 'app-roles-dialog',
     imports: [
-        CommonModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatListModule,
-        MatIconModule,
-        MatChipsModule
-    ],
+    MatDialogModule,
+    MatButtonModule,
+    MatListModule,
+    MatIconModule,
+    MatChipsModule
+],
     templateUrl: './roles-dialog.html',
     styleUrl: './roles-dialog.scss',
 })

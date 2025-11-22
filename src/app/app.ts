@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectorRef, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,15 +12,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
     selector: 'app-root',
     imports: [
-        RouterOutlet,
-        CommonModule,
-        RouterLink,
-        MatToolbarModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatProgressSpinnerModule,
-    ],
+    RouterOutlet,
+    RouterLink,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule
+],
     templateUrl: './app.html',
     styleUrl: './app.scss',
 })
@@ -66,7 +65,6 @@ export class App implements OnInit {
         Promise.all([fakeLoad, authLoad]).then(() => {
             this.isLoading.set(false);
 
-            // This is the "sledgehammer" fix for our zoneless app
             this.cdr.detectChanges();
         });
     }
@@ -93,6 +91,5 @@ export class App implements OnInit {
             },
             error: (err) => console.error(`WS error on ${privateChannel}:`, err),
         });
-        // --- END OF FIX ---
     }
 }
