@@ -1,26 +1,27 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth-guard';
+import { authGuard } from './core/guards/auth-guard';
+import { noAuthGuard } from './core/guards/no-auth-guard';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
     },
     {
         path: 'login',
         loadComponent: () => import('./auth/login-component/login-component').then((m) => m.LoginComponent),
+        canActivate: [noAuthGuard],
     },
     {
         path: 'registration',
         loadComponent: () =>
             import('./auth/registration-component/registration-component').then((m) => m.RegistrationComponent),
+        canActivate: [noAuthGuard],
     },
     {
         path: 'dashboard',
-        loadComponent: () =>
-            import('./dashboard/dashboard')
-                .then((m) => m.Dashboard),
+        loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
         canActivate: [authGuard],
     },
     {
@@ -35,6 +36,6 @@ export const routes: Routes = [
     },
     {
         path: '**',
-        redirectTo: 'login',
+        redirectTo: 'dashboard',
     },
 ];

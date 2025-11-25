@@ -8,7 +8,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TaskDTO } from '../core/models/task.model';
 import { MyBids } from '../my-bids/my-bids';
 import { MyBidDetailDTO } from '../core/models/bid.model';
-import { WebSocketService } from '../core/services/web-socket';
+import { WebSocketService } from '../core/services/infra/web-socket';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from "@angular/material/icon";
 import { WalletComponent } from '../wallet-component/wallet-component';

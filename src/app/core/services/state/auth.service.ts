@@ -1,10 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from '../../auth.config';
+import { authConfig } from '../../../auth.config';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { Observable, throwError, tap, catchError, firstValueFrom } from 'rxjs';
-import { AuthApi } from './api/auth-api';
+import { AuthApi } from '../api/auth-api';
 
 @Injectable({
     providedIn: 'root',

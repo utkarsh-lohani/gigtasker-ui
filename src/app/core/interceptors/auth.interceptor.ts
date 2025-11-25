@@ -5,7 +5,7 @@ import {
     HttpHandlerFn,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { AuthService } from '../services/state/auth.service';
 import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 
 let isRefreshing = false;

@@ -7,7 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { WebSocketService } from '../core/services/web-socket';
+import { WebSocketService } from '../core/services/infra/web-socket';
 import { BidDetailDTO, BidDTO } from '../core/models/bid.model';
 import { BidsApi } from '../core/services/api/bids-api';
 
