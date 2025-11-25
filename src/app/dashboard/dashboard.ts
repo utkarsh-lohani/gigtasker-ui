@@ -1,4 +1,3 @@
-
 import { Component, effect, inject, QueryList, signal, ViewChildren } from '@angular/core';
 import { ApiService } from '../core/services/api-service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,17 +11,13 @@ import { TaskDTO } from '../core/models/task.model';
 import { MyBids } from '../my-bids/my-bids';
 import { MyBidDetailDTO } from '../core/models/bid.model';
 import { WebSocketService } from '../core/services/web-socket';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from "@angular/material/icon";
+import { WalletComponent } from '../wallet-component/wallet-component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [
-    MatCardModule,
-    MatTabsModule,
-    CreateTask,
-    TaskList,
-    MatProgressSpinnerModule,
-    MyBids
-],
+    imports: [MatCardModule, MatTabsModule, CreateTask, TaskList, MatProgressSpinnerModule, MyBids, MatIconModule, WalletComponent],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss',
 })
@@ -46,6 +41,19 @@ export class Dashboard {
     public myBidsLoading = signal(false);
 
     public selectedTabIndex = signal(0);
+
+    private readonly dialog = inject(MatDialog);
+
+    openCreateTaskDialog() {
+        this.dialog.open(CreateTask, {
+            width: '600px',
+            disableClose: true,
+        });
+    }
+
+    onTabChange(index: number) {
+        this.selectedTabIndex.set(index);
+    }
 
     constructor() {
         // This effect runs when selectedTabIndex or user() changes

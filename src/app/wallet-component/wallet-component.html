@@ -1,0 +1,105 @@
+<div class="wallet-container">
+    @if (isLoading()) {
+    <div class="spinner-container">
+        <mat-spinner diameter="50"></mat-spinner>
+    </div>
+    } @else if (wallet()) {
+
+    <!-- TOP SECTION: CARDS -->
+    <div class="cards-row">
+        <!-- BALANCE CARD -->
+        <mat-card class="balance-card">
+            <mat-card-header>
+                <mat-card-title>Current Balance</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="balance-display">
+                    <span class="currency">$</span>
+                    <span class="amount">{{ wallet()?.balance | number : '1.2-2' }}</span>
+                </div>
+                @if (wallet()!.heldFunds > 0) {
+                <div class="held-funds">
+                    <mat-icon>lock</mat-icon>
+                    <span>${{ wallet()?.heldFunds | number : '1.2-2' }} on hold (active gigs)</span>
+                </div>
+                }
+            </mat-card-content>
+        </mat-card>
+
+        <!-- DEPOSIT CARD -->
+        <mat-card class="deposit-card">
+            <mat-card-header>
+                <mat-card-title>Add Funds</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p>Enter an amount to deposit into your account.</p>
+                <div class="deposit-form">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Amount</mat-label>
+                        <span matTextPrefix>$&nbsp;</span>
+                        <input matInput type="number" [(ngModel)]="depositAmount" min="1" />
+                    </mat-form-field>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="!depositAmount || depositAmount <= 0"
+                        (click)="onDeposit()"
+                    >
+                        Deposit
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <!-- BOTTOM SECTION: HISTORY -->
+    <div class="history-section">
+        <h3>Transaction History</h3>
+
+        <table mat-table [dataSource]="transactions()" class="mat-elevation-z2">
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let t">{{ t.timestamp | date : 'medium' }}</td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let t">
+                    <span class="badge" [class]="t.type">{{ t.type }}</span>
+                </td>
+            </ng-container>
+
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef>Amount</th>
+                <td
+                    mat-cell
+                    *matCellDef="let t"
+                    [class.negative]="t.type === 'WITHDRAWAL' || t.type === 'HOLD'"
+                    [class.positive]="
+                        t.type === 'DEPOSIT' || t.type === 'RELEASE' || t.type === 'REFUND'
+                    "
+                >
+                    {{ t.amount | currency }}
+                </td>
+            </ng-container>
+
+            <!-- Desc Column -->
+            <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>Description</th>
+                <td mat-cell *matCellDef="let t">{{ t.description }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        @if(transactions().length === 0) {
+        <div class="empty-state">No transactions yet. Start spending!</div>
+        }
+    </div>
+
+    }
+</div>

@@ -4,15 +4,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../core/services/api-service';
-import { BidDialog } from '../bid-dialog/bid-dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TaskDTO } from '../core/models/task.model';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
+import { switchMap, map } from 'rxjs/operators'; // Import RxJS operators
+import { BidDialog } from '../bid-dialog/bid-dialog';
 import { BidDetailDTO } from '../core/models/bid.model';
+import { TaskDTO } from '../core/models/task.model';
+import { ApiService } from '../core/services/api-service';
 import { AuthService } from '../core/services/auth.service';
 
 @Component({
@@ -54,29 +55,39 @@ export class TaskDetail implements OnInit {
 
     loadTask(id: number) {
         this.isLoading.set(true);
-        this.api.getTaskById(id).subscribe({
-            next: (t) => {
-                this.task.set(t);
-                this.checkPermissions(t);
 
-                // If I am the poster, load the bids
-                if (this.isPoster() && t.status === 'OPEN') {
-                    this.loadBids(t.id);
-                }
-                this.isLoading.set(false);
-            },
-            error: () => {
-                this.snack.open('Task not found', 'Back');
-                this.router.navigate(['/dashboard']);
-            },
-        });
-    }
+        // Chain the requests: Get Task -> Then Get User -> Then Decide logic
+        this.api
+            .getTaskById(id)
+            .pipe(
+                switchMap((task) => {
+                    this.task.set(task);
+                    // Fetch current user to check permissions
+                    return this.api.getMe().pipe(map((me) => ({ task, me })));
+                })
+            )
+            .subscribe({
+                next: ({ task, me }) => {
+                    // 1. Determine Permissions
+                    const isPoster = me.id === task.posterUserId;
+                    this.isPoster.set(isPoster);
+                    this.isAssignedWorker.set(me.id === task.assignedUserId);
 
-    checkPermissions(task: TaskDTO) {
-        this.api.getMe().subscribe((me) => {
-            this.isPoster.set(me.id === task.posterUserId);
-            this.isAssignedWorker.set(me.id === task.assignedUserId);
-        });
+                    // 2. Load Bids ONLY if I am the poster and task is OPEN
+                    // (Now guaranteed to work because we waited for 'me')
+                    if (isPoster && task.status === 'OPEN') {
+                        this.loadBids(task.id);
+                    }
+
+                    this.isLoading.set(false);
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.snack.open('Task not found', 'Back');
+                    this.router.navigate(['/dashboard']);
+                    this.isLoading.set(false);
+                },
+            });
     }
 
     loadBids(taskId: number) {
@@ -90,7 +101,8 @@ export class TaskDetail implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result) this.loadTask(this.task()!.id); // Refresh to see update count
+            // Refresh task if bid placed successfully
+            if (result) this.loadTask(this.task()!.id);
         });
     }
 
@@ -104,7 +116,6 @@ export class TaskDetail implements OnInit {
                 this.loadTask(this.task()!.id); // Status should change to ASSIGNED
             },
             error: (err) => {
-                // Handle "Insufficient Funds" specific error
                 const msg = err.error?.message || 'Failed to accept bid.';
                 this.snack.open(msg, 'Close', { duration: 5000 });
             },

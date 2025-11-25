@@ -56,5 +56,17 @@
             <app-my-bids [bids]="myBids()" [isLoading]="myBidsLoading()"> </app-my-bids>
             }
         </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">account_balance_wallet</mat-icon>
+                My Wallet
+            </ng-template>
+            <div class="tab-content">
+                <!-- Lazy render: Only show when tab index is 3 -->
+                @if (selectedTabIndex() === 3) {
+                <app-wallet-component></app-wallet-component>
+                }
+            </div>
+        </mat-tab>
     </mat-tab-group>
 </div>

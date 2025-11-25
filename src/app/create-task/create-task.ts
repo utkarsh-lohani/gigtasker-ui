@@ -36,6 +36,8 @@ export class CreateTask {
     @Input() currentUser: UserDTO | undefined;
     @Output() taskCreated = new EventEmitter<void>();
 
+    minDate = new Date(); // For datepicker minimum date
+
     // This lets us grab the stepper from the HTML to control it
     @ViewChild('stepper') stepper!: MatStepper;
 
