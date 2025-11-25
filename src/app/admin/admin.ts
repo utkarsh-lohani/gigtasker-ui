@@ -7,10 +7,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { UserDTO } from '../core/models/user.model';
-import { ApiService } from '../core/services/api-service';
 import { MatChipsModule } from '@angular/material/chips';
 import { RolesDialog } from '../roles-dialog/roles-dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { UsersApi } from '../core/services/api/users-api';
 
 @Component({
     selector: 'app-admin',
@@ -25,11 +25,11 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrl: './admin.scss',
 })
 export class AdminComponent {
-    private readonly apiService = inject(ApiService);
+    private readonly usersApi = inject(UsersApi);
     private readonly snackBar = inject(MatSnackBar);
     private readonly dialog = inject(MatDialog);
 
-    public users = toSignal(this.apiService.getAllUsers());
+    public users = toSignal(this.usersApi.getAllUsers());
 
     public displayedColumns = [
         'id',
@@ -43,7 +43,7 @@ export class AdminComponent {
 
     public onPromote(user: UserDTO): void {
         if (confirm(`Promote ${user.username} to ADMIN?`)) {
-            this.apiService.promoteUser(user.id).subscribe({
+            this.usersApi.promoteUser(user.id).subscribe({
                 next: () => {
                     this.snackBar.open('User promoted!', 'OK', { duration: 3000 });
                     globalThis.location.reload();
@@ -55,7 +55,7 @@ export class AdminComponent {
 
     public onDelete(user: UserDTO): void {
         if (confirm(`DELETE ${user.username}?`)) {
-            this.apiService.deleteUser(user.id).subscribe({
+            this.usersApi.deleteUser(user.id).subscribe({
                 next: () => {
                     this.snackBar.open('User deleted.', 'OK', { duration: 3000 });
                     globalThis.location.reload();

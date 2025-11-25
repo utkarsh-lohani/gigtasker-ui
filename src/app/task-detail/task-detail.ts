@@ -13,8 +13,9 @@ import { switchMap, map } from 'rxjs/operators'; // Import RxJS operators
 import { BidDialog } from '../bid-dialog/bid-dialog';
 import { BidDetailDTO } from '../core/models/bid.model';
 import { TaskDTO } from '../core/models/task.model';
-import { ApiService } from '../core/services/api-service';
-import { AuthService } from '../core/services/auth.service';
+import { TasksApi } from '../core/services/api/tasks-api';
+import { UsersApi } from '../core/services/api/users-api';
+import { BidsApi } from '../core/services/api/bids-api';
 
 @Component({
     selector: 'app-task-detail',
@@ -33,8 +34,9 @@ import { AuthService } from '../core/services/auth.service';
 export class TaskDetail implements OnInit {
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
-    private readonly api = inject(ApiService);
-    public readonly auth = inject(AuthService);
+    private readonly tasksApi = inject(TasksApi);
+    private readonly bidsApi = inject(BidsApi);
+    private readonly usersApi = inject(UsersApi);
     private readonly dialog = inject(MatDialog);
     private readonly snack = inject(MatSnackBar);
 
@@ -57,13 +59,13 @@ export class TaskDetail implements OnInit {
         this.isLoading.set(true);
 
         // Chain the requests: Get Task -> Then Get User -> Then Decide logic
-        this.api
+        this.tasksApi
             .getTaskById(id)
             .pipe(
                 switchMap((task) => {
                     this.task.set(task);
                     // Fetch current user to check permissions
-                    return this.api.getMe().pipe(map((me) => ({ task, me })));
+                    return this.usersApi.getMe().pipe(map((me) => ({ task, me })));
                 })
             )
             .subscribe({
@@ -91,7 +93,7 @@ export class TaskDetail implements OnInit {
     }
 
     loadBids(taskId: number) {
-        this.api.getBidsForTask(taskId).subscribe((b) => this.bids.set(b));
+        this.bidsApi.getBidsForTask(taskId).subscribe((b) => this.bids.set(b));
     }
 
     openBidDialog() {
@@ -110,7 +112,7 @@ export class TaskDetail implements OnInit {
         if (!confirm(`Accept bid for $${bid.amount}? This will hold funds from your wallet.`))
             return;
 
-        this.api.acceptBid(bid.bidId).subscribe({
+        this.bidsApi.acceptBid(bid.bidId).subscribe({
             next: () => {
                 this.snack.open('Bid Accepted! Funds held in escrow.', 'OK', { duration: 5000 });
                 this.loadTask(this.task()!.id); // Status should change to ASSIGNED
@@ -125,7 +127,7 @@ export class TaskDetail implements OnInit {
     completeTask() {
         if (!confirm('Mark this job as done? This will release payment.')) return;
 
-        this.api.completeTask(this.task()!.id).subscribe({
+        this.tasksApi.completeTask(this.task()!.id).subscribe({
             next: () => {
                 this.snack.open('Great job! Payment released to your wallet.', 'Cha-ching!', {
                     duration: 5000,

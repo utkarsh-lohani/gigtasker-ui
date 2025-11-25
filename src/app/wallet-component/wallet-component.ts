@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { Wallet, WalletTransaction } from '../core/models/wallet.model';
-import { ApiService } from '../core/services/api-service';
+import { WalletApi } from '../core/services/api/wallet-api';
 
 @Component({
     selector: 'app-wallet-component',
@@ -29,7 +29,7 @@ import { ApiService } from '../core/services/api-service';
     styleUrl: './wallet-component.scss',
 })
 export class WalletComponent implements OnInit {
-    private readonly apiService = inject(ApiService);
+    private readonly walletApi = inject(WalletApi);
     private readonly snackBar = inject(MatSnackBar);
 
     public wallet = signal<Wallet | null>(null);
@@ -48,7 +48,7 @@ export class WalletComponent implements OnInit {
 
         // Parallel load of Wallet + History
         // In a real app, you might use forkJoin
-        this.apiService.getMyWallet().subscribe({
+        this.walletApi.getMyWallet().subscribe({
             next: (w) => {
                 this.wallet.set(w);
                 this.isLoading.set(false); // Stop spinner once balance loads
@@ -59,7 +59,7 @@ export class WalletComponent implements OnInit {
             },
         });
 
-        this.apiService.getWalletHistory().subscribe({
+        this.walletApi.getWalletHistory().subscribe({
             next: (t) => this.transactions.set(t),
             error: (err) => console.error('Failed to load history', err),
         });
@@ -68,7 +68,7 @@ export class WalletComponent implements OnInit {
     onDeposit() {
         if (!this.depositAmount || this.depositAmount <= 0) return;
 
-        this.apiService.depositFunds(this.depositAmount).subscribe({
+        this.walletApi.depositFunds(this.depositAmount).subscribe({
             next: (updatedWallet) => {
                 this.wallet.set(updatedWallet);
                 this.snackBar.open(`Successfully added $${this.depositAmount}!`, 'Cha-ching!', {
@@ -77,7 +77,7 @@ export class WalletComponent implements OnInit {
                 this.depositAmount = null;
 
                 // Reload history to show the new deposit
-                this.apiService.getWalletHistory().subscribe((t) => this.transactions.set(t));
+                this.walletApi.getWalletHistory().subscribe((t) => this.transactions.set(t));
             },
             error: () => this.snackBar.open('Deposit failed.', 'Close', { duration: 3000 }),
         });

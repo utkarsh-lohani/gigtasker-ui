@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TaskDTO } from '../core/models/task.model';
-import { ApiService } from '../core/services/api-service';
+import { BidsApi } from '../core/services/api/bids-api';
 
 @Component({
     selector: 'app-bid-dialog',
@@ -25,7 +25,7 @@ import { ApiService } from '../core/services/api-service';
 })
 export class BidDialog {
     private readonly fb = inject(FormBuilder);
-    private readonly api = inject(ApiService);
+    private readonly bidsApi = inject(BidsApi);
     private readonly dialogRef = inject(MatDialogRef<BidDialog>);
     private readonly snackBar = inject(MatSnackBar);
     public data: TaskDTO = inject(MAT_DIALOG_DATA);
@@ -51,8 +51,8 @@ export class BidDialog {
             proposal: this.bidForm.value.proposal,
         };
 
-        this.api.placeBid(payload as any).subscribe({
-            next: (res) => {
+        this.bidsApi.placeBid(payload as any).subscribe({
+            next: () => {
                 this.snackBar.open('Bid placed successfully!', 'OK', {
                     duration: 3000,
                 });

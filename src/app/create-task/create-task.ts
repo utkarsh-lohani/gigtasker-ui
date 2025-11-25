@@ -7,11 +7,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { TaskDTO } from '../core/models/task.model';
-import { ApiService } from '../core/services/api-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserDTO } from '../core/models/user.model';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { TasksApi } from '../core/services/api/tasks-api';
 
 @Component({
     selector: 'app-create-task',
@@ -30,7 +30,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 })
 export class CreateTask {
     private readonly fb = inject(FormBuilder);
-    private readonly apiService = inject(ApiService);
+    private readonly tasksApi = inject(TasksApi);
     private readonly snackBar = inject(MatSnackBar);
 
     @Input() currentUser: UserDTO | undefined;
@@ -70,7 +70,7 @@ export class CreateTask {
             maxBidsPerUser: this.step3Group.value.maxBidsPerUser || 3,
         };
 
-        this.apiService.createTask(taskData).subscribe({
+        this.tasksApi.createTask(taskData).subscribe({
             next: () => {
                 // 1. Show the "toast"
                 this.snackBar.open('Task posted successfully!', 'Close', {

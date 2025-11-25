@@ -1,7 +1,5 @@
 import { Component, effect, inject, QueryList, signal, ViewChildren } from '@angular/core';
-import { ApiService } from '../core/services/api-service';
 import { toSignal } from '@angular/core/rxjs-interop';
-
 import { MatCardModule } from '@angular/material/card';
 import { CreateTask } from '../create-task/create-task';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,6 +12,9 @@ import { WebSocketService } from '../core/services/web-socket';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from "@angular/material/icon";
 import { WalletComponent } from '../wallet-component/wallet-component';
+import { UsersApi } from '../core/services/api/users-api';
+import { TasksApi } from '../core/services/api/tasks-api';
+import { BidsApi } from '../core/services/api/bids-api';
 
 @Component({
     selector: 'app-dashboard',
@@ -22,10 +23,12 @@ import { WalletComponent } from '../wallet-component/wallet-component';
     styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-    private readonly apiService = inject(ApiService);
+    private readonly usersApi = inject(UsersApi);
+    private readonly tasksApi = inject(TasksApi);
+    private readonly bidsApi = inject(BidsApi);
     private readonly wsService = inject(WebSocketService);
 
-    public user = toSignal(this.apiService.getMe());
+    public user = toSignal(this.usersApi.getMe());
 
     // This grabs *all* <app-task-list> components in our template
     @ViewChildren(TaskList) taskLists!: QueryList<TaskList>;
@@ -91,7 +94,7 @@ export class Dashboard {
 
     private loadAllTasks(): void {
         this.allTasksLoading.set(true);
-        this.apiService.getAllTasks().subscribe({
+        this.tasksApi.getAllTasks().subscribe({
             next: (data) => {
                 this.allTasks.set(data);
                 this.allTasksLoading.set(false);
@@ -108,7 +111,7 @@ export class Dashboard {
         if (!userId) return; // Safety check
 
         this.myTasksLoading.set(true);
-        this.apiService.getTasksByUserId(userId).subscribe({
+        this.tasksApi.getTasksByUserId(userId).subscribe({
             next: (data) => {
                 this.myTasks.set(data);
                 this.myTasksLoading.set(false);
@@ -122,7 +125,7 @@ export class Dashboard {
 
     private loadMyBids(): void {
         this.myBidsLoading.set(true);
-        this.apiService.getMyBids().subscribe({
+        this.bidsApi.getMyBids().subscribe({
             next: (data) => {
                 this.myBids.set(data);
                 this.myBidsLoading.set(false);

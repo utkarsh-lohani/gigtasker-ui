@@ -12,9 +12,10 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
-import { ApiService } from '../../core/services/api-service';
 import { Country } from '../../core/models/country-region.model';
 import { Gender } from '../../core/models/gender.model';
+import { ReferenceDataApi } from '../../core/services/api/reference-data-api';
+import { AuthApi } from '../../core/services/api/auth-api';
 
 @Component({
     selector: 'app-registration-component',
@@ -38,7 +39,8 @@ import { Gender } from '../../core/models/gender.model';
 })
 export class RegistrationComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
-    private readonly api = inject(ApiService);
+    private readonly referenceDataApi = inject(ReferenceDataApi);
+    private readonly authApi = inject(AuthApi);
     private readonly router = inject(Router);
 
     genders = signal<Gender[]>([]);
@@ -79,8 +81,8 @@ export class RegistrationComponent implements OnInit {
     }
 
     loadReferences() {
-        this.api.getGenders().subscribe((g) => this.genders.set(g));
-        this.api.getCountries().subscribe((c) => {
+        this.referenceDataApi.getGenders().subscribe((g) => this.genders.set(g));
+        this.referenceDataApi.getCountries().subscribe((c) => {
             this.countries.set(c);
             this.filteredCountries.set(c);
             this.autoSelectCountry(c);
@@ -130,7 +132,7 @@ export class RegistrationComponent implements OnInit {
             countryId: this.locationForm.value.country?.id, // Send ID
         };
 
-        this.api.register(payload).subscribe({
+        this.authApi.register(payload).subscribe({
             next: () => {
                 alert('Success! Redirecting to login...');
                 this.router.navigate(['/login']);

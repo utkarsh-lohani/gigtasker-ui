@@ -5,11 +5,11 @@ import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApiService } from '../core/services/api-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { WebSocketService } from '../core/services/web-socket';
 import { BidDetailDTO, BidDTO } from '../core/models/bid.model';
+import { BidsApi } from '../core/services/api/bids-api';
 
 @Component({
     selector: 'app-view-bids-dialog',
@@ -24,7 +24,7 @@ import { BidDetailDTO, BidDTO } from '../core/models/bid.model';
     styleUrl: './view-bids-dialog.scss',
 })
 export class ViewBidsDialog implements OnInit {
-    private readonly apiService = inject(ApiService);
+    private readonly bidsApi = inject(BidsApi);
     public data: { taskId: number } = inject(MAT_DIALOG_DATA);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
@@ -56,7 +56,7 @@ export class ViewBidsDialog implements OnInit {
 
     public loadBids(): void {
         this.isLoading.set(true);
-        this.apiService.getBidsForTask(this.data.taskId).subscribe({
+        this.bidsApi.getBidsForTask(this.data.taskId).subscribe({
             next: (data) => {
                 this.bids.set(data);
                 this.isLoading.set(false);
@@ -69,7 +69,7 @@ export class ViewBidsDialog implements OnInit {
     }
 
     public acceptBid(bidId: number): void {
-        this.apiService.acceptBid(bidId).subscribe({
+        this.bidsApi.acceptBid(bidId).subscribe({
             next: () => {
                 this.snackBar.open('Bid accepted! The gig is now assigned.', 'OK', {
                     duration: 5000,

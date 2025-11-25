@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ApiService } from '../../core/services/api-service';
 import { AuthService } from '../../core/services/auth.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { AuthApi } from '../../core/services/api/auth-api';
 
 @Component({
     selector: 'app-login-component',
@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
     styleUrl: './login-component.scss',
 })
 export class LoginComponent {
-    private readonly api = inject(ApiService);
+    private readonly authApi = inject(AuthApi);
     private readonly auth = inject(AuthService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
@@ -58,7 +58,7 @@ export class LoginComponent {
 
         this.isLoading.set(true);
 
-        this.api.login(this.username, this.password).subscribe({
+        this.authApi.login(this.username, this.password).subscribe({
             next: (response) => {
                 this.auth.saveToken(response);
                 this.snackBar.open('Login Successful!', 'OK', { duration: 2000 });

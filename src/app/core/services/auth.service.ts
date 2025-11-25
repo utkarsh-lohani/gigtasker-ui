@@ -4,7 +4,7 @@ import { authConfig } from '../../auth.config';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { Observable, throwError, tap, catchError, firstValueFrom } from 'rxjs';
-import { ApiService } from './api-service';
+import { AuthApi } from './api/auth-api';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +15,7 @@ export class AuthService {
 
     private readonly oauthService = inject(OAuthService);
     private readonly router = inject(Router);
-    private readonly apiService = inject(ApiService);
+    private readonly authApi = inject(AuthApi);
 
     public isAuthenticated = signal(false);
     public isAdmin = signal(false);
@@ -133,7 +133,7 @@ export class AuthService {
             return throwError(() => new Error('No refresh token available'));
         }
 
-        return this.apiService.refreshToken(refreshToken).pipe(
+        return this.authApi.refreshToken(refreshToken).pipe(
             tap((response: any) => {
                 this.saveToken(response);
                 console.log('Token refreshed successfully');
