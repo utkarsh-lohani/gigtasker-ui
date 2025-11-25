@@ -29,12 +29,15 @@
             <mat-icon>logout</mat-icon>
             Log Out
         </button>
+        <a mat-button routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            Profile
+        </a>
         } @else {
         <a mat-button [routerLink]="'/registration'">
             <mat-icon>person_add</mat-icon>
             Register
         </a>
-
         <a mat-button [routerLink]="'/login'">
             <mat-icon>login</mat-icon>
             Log In

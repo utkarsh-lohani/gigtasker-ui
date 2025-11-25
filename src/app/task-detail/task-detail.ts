@@ -137,4 +137,17 @@ export class TaskDetail implements OnInit {
             error: () => this.snack.open('Error completing task', 'Close'),
         });
     }
+
+    cancelTask() {
+        if (!confirm('Are you sure you want to cancel? If assigned, funds will be refunded.'))
+            return;
+
+        this.tasksApi.cancelTask(this.task()!.id).subscribe({
+            next: () => {
+                this.snack.open('Task Cancelled', 'OK', { duration: 3000 });
+                this.router.navigate(['/dashboard']); // Go back to list
+            },
+            error: () => this.snack.open('Failed to cancel task', 'Close'),
+        });
+    }
 }

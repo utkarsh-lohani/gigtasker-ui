@@ -10,13 +10,16 @@ export const routes: Routes = [
     },
     {
         path: 'login',
-        loadComponent: () => import('./auth/login-component/login-component').then((m) => m.LoginComponent),
+        loadComponent: () =>
+            import('./auth/login-component/login-component').then((m) => m.LoginComponent),
         canActivate: [noAuthGuard],
     },
     {
         path: 'registration',
         loadComponent: () =>
-            import('./auth/registration-component/registration-component').then((m) => m.RegistrationComponent),
+            import('./auth/registration-component/registration-component').then(
+                (m) => m.RegistrationComponent
+            ),
         canActivate: [noAuthGuard],
     },
     {
@@ -32,6 +35,12 @@ export const routes: Routes = [
     {
         path: 'tasks/:id',
         loadComponent: () => import('./task-detail/task-detail').then((m) => m.TaskDetail),
+        canActivate: [authGuard],
+    },
+    {
+        path: 'profile',
+        loadComponent: () =>
+            import('./user-profile/user-profile').then((m) => m.UserProfile),
         canActivate: [authGuard],
     },
     {

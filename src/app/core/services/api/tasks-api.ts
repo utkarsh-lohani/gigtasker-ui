@@ -27,6 +27,13 @@ export class TasksApi {
     }
 
     public completeTask(taskId: number): Observable<void> {
-        return this.http.put<void>(`${GigtaskerConstants.API_URL}/api/tasks/${taskId}/complete`, {});
+        return this.http.put<void>(
+            `${GigtaskerConstants.API_URL}/api/tasks/${taskId}/complete`,
+            {}
+        );
+    }
+
+    public cancelTask(taskId: number): Observable<void> {
+        return this.http.delete<void>(`${GigtaskerConstants.API_URL}/api/tasks/${taskId}`);
     }
 }

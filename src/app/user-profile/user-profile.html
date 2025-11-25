@@ -1,0 +1,117 @@
+<div class="profile-container" *ngIf="user(); else loading">
+    <mat-card class="profile-card">
+        <!-- HEADER / AVATAR -->
+        <div class="profile-header">
+            <div class="avatar-wrapper">
+                <img [src]="getAvatarUrl(user()!)" alt="Avatar" class="avatar" />
+                <div class="upload-overlay" (click)="fileInput.click()" onkeypress="">
+                    <mat-icon>camera_alt</mat-icon>
+                </div>
+                <input
+                    #fileInput
+                    type="file"
+                    hidden
+                    (change)="onFileSelected($event)"
+                    accept="image/*"
+                />
+                <mat-spinner
+                    *ngIf="isUploading()"
+                    diameter="40"
+                    class="upload-spinner"
+                ></mat-spinner>
+            </div>
+
+            <div class="header-text">
+                <h1 *ngIf="!isEditing()">{{ user()?.firstName }} {{ user()?.lastName }}</h1>
+                <p class="username">@{{ user()?.username }}</p>
+            </div>
+
+            <button mat-icon-button class="edit-btn" (click)="toggleEdit()">
+                <mat-icon>{{ isEditing() ? 'close' : 'edit' }}</mat-icon>
+            </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-content>
+            <!-- VIEW MODE -->
+            <div class="details-grid" *ngIf="!isEditing()">
+                <div class="detail-item">
+                    <span class="label">Email</span>
+                    <span class="value">{{ user()?.email }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Country</span>
+                    <span class="value">{{ user()?.country?.name || 'Unknown' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Gender</span>
+                    <span class="value">{{ user()?.gender?.description || 'Not specified' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Date of Birth</span>
+                    <span class="value">{{ user()?.dateOfBirth | date : 'mediumDate' }}</span>
+                </div>
+            </div>
+
+            <!-- EDIT MODE -->
+            <form [formGroup]="editForm" class="edit-form" *ngIf="isEditing()">
+                <div class="form-row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>First Name</mat-label>
+                        <input matInput formControlName="firstName" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Last Name</mat-label>
+                        <input matInput formControlName="lastName" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Date of Birth</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Ethnicity</mat-label>
+                        <input matInput formControlName="ethnicity" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Gender</mat-label>
+                        <mat-select formControlName="genderId">
+                            @for (g of genders(); track g.id) {
+                            <mat-option [value]="g.id">{{ g.name }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Country</mat-label>
+                        <mat-select formControlName="countryId">
+                            @for (c of countries(); track c.id) {
+                            <mat-option [value]="c.id">{{ c.name }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="actions">
+                    <button mat-button (click)="toggleEdit()">Cancel</button>
+                    <button mat-flat-button color="primary" (click)="saveProfile()">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<ng-template #loading>
+    <div class="loading-container"><mat-spinner></mat-spinner></div>
+</ng-template>
