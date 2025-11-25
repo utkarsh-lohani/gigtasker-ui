@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     templateUrl: './app.html',
     styleUrl: './app.scss',
 })
-export class App implements OnInit {
+export class AppComponent implements OnInit {
     public authService = inject(AuthService);
     public isLoading = signal(true);
 

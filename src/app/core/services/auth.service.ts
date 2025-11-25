@@ -2,152 +2,190 @@ import { Injectable, inject, signal } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from '../../auth.config';
 import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
+import { Observable, throwError, tap, catchError, firstValueFrom } from 'rxjs';
+import { ApiService } from './api-service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly oauthService = inject(OAuthService);
+    private readonly TOKEN_KEY = 'gigtasker_token';
+    private readonly REFRESH_TOKEN_KEY = 'gigtasker_refresh_token';
 
-    // We use a Signal to hold the authentication state (Zoneless!)
+    private readonly oauthService = inject(OAuthService);
+    private readonly router = inject(Router);
+    private readonly apiService = inject(ApiService);
+
     public isAuthenticated = signal(false);
     public isAdmin = signal(false);
+    public isDoneLoading = signal(false);
 
     constructor() {
-        // This tells the library to use our config
         this.oauthService.configure(authConfig);
     }
 
-    // This is the "Ignition" method we run at startup
     public async initLoginFlow(): Promise<void> {
-        // This loads the OIDC discovery document
-        await this.oauthService.loadDiscoveryDocumentAndTryLogin();
+        try {
+            // 1. Check Local Token (Manual Flow)
+            this.checkLocalToken();
 
-        this.oauthService.setupAutomaticSilentRefresh();
+            // 2. If valid, we are done!
+            if (this.isAuthenticated()) {
+                this.isDoneLoading.set(true);
+                return;
+            }
 
-        if (this.oauthService.hasValidAccessToken()) {
-            // User is already logged in
+            // If access token is expired but refresh token exists, try to swap it NOW.
+            const refreshToken = this.getRefreshToken();
+            if (refreshToken) {
+                try {
+                    await firstValueFrom(this.refreshAccessToken());
+                    // If successful, saveToken() inside refreshAccessToken sets isAuthenticated=true
+                    this.isDoneLoading.set(true);
+                    return;
+                } catch (err) {
+                    console.warn('Startup refresh failed', err);
+                    // Continue to OIDC check...
+                }
+            }
+
+            // 4. Fallback: Check OIDC (Keycloak Redirect Flow)
+            await this.oauthService.loadDiscoveryDocumentAndTryLogin();
+            this.oauthService.setupAutomaticSilentRefresh();
+
+            if (this.oauthService.hasValidAccessToken()) {
+                this.isAuthenticated.set(true);
+                this.checkAdminRole(this.oauthService.getAccessToken());
+            }
+        } catch (e) {
+            console.error('Auth Init failed', e);
+        } finally {
+            this.isDoneLoading.set(true);
+        }
+    }
+
+    // --- Token Management ---
+
+    public saveToken(response: any): void {
+        if (response.access_token) {
+            localStorage.setItem(this.TOKEN_KEY, response.access_token);
+        }
+        if (response.refresh_token) {
+            localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refresh_token);
+        }
+        // Re-check validity immediately
+        this.checkLocalToken();
+    }
+
+    public checkLocalToken(): void {
+        const token = localStorage.getItem(this.TOKEN_KEY);
+        if (token && !this.isTokenExpired(token)) {
             this.isAuthenticated.set(true);
-            this.checkAdminRole(); // Check if User has Admin Role
+            this.checkAdminRole(token);
         } else {
-            // This is a "silent refresh" check
-            this.oauthService.events.subscribe((e) => {
-                if (e.type === 'token_received') {
-                    this.isAuthenticated.set(true);
-                    this.checkAdminRole(); // Check if User has Admin Role
-                }
-                if (e.type === 'token_refresh_error') {
-                    console.error('[AuthService] Token Refresh Failed!', e);
-                }
-                if (e.type === 'session_terminated') {
-                    console.warn('[AuthService] Session Terminated event received');
-                }
-            });
-        }
-    }
-
-    public login(): void {
-        // This redirects the user to the Keycloak login page
-        this.oauthService.initCodeFlow();
-    }
-
-    public logout(): void {
-        // 1. Get the ID Token (required by Keycloak for redirect)
-        const idToken = this.oauthService.getIdToken();
-
-        // 2. Get the logout endpoint from the discovery document
-        const logoutUrl = this.oauthService.logoutUrl;
-
-        // 3. Get your redirect URI (where you want to go after logout)
-        const postLogoutRedirectUri = globalThis.location.origin; // http://localhost:4200
-
-        if (idToken && logoutUrl) {
-            // 4. Construct the OIDC-compliant URL manually
-            const url = `${logoutUrl}?id_token_hint=${idToken}&post_logout_redirect_uri=${encodeURIComponent(
-                postLogoutRedirectUri
-            )}`;
-
-            // 5. Clear local state
-            this.oauthService.logOut(true); // "true" means "no remote call", since we do it ourselves
+            // Ensure state is false if expired (so initLoginFlow moves to refresh step)
             this.isAuthenticated.set(false);
-            this.isAdmin.set(false);
-
-            // 6. Redirect the browser
-            globalThis.location.href = url;
-        } else {
-            // Fallback: Just clear local state if we can't notify Keycloak
-            this.oauthService.logOut();
-            this.isAuthenticated.set(false);
-            this.isAdmin.set(false);
-            globalThis.location.reload();
         }
     }
 
-    public register(): void {
-        // We will build the registration URL.
-
-        // 1. Guard against missing config
-        const clientId = this.oauthService.clientId;
-        const redirectUri = this.oauthService.redirectUri;
-        const issuer = this.oauthService.issuer;
-
-        if (!clientId || !redirectUri || !issuer) {
-            console.error('AuthService is not properly configured.');
-            return;
-        }
-
-        // 2. Build the URL
-        // Keycloak's official registration endpoint is always at this path
-        const registrationEndpoint = `${issuer}/protocol/openid-connect/registrations`;
-
-        // 3. Encode the parts for a URL
-        const encRedirectUri = encodeURIComponent(redirectUri);
-        const encClientId = encodeURIComponent(clientId);
-
-        // 4. Redirect the user. This bypasses all of my buggy
-        //    "discovery" code and just *works*.
-        globalThis.location.href = `${registrationEndpoint}?client_id=${encClientId}&redirect_uri=${encRedirectUri}&response_type=code&scope=openid`;
-    }
-
-    public getToken(): string {
+    public getToken(): string | null {
+        const localToken = localStorage.getItem(this.TOKEN_KEY);
+        if (localToken) return localToken;
         return this.oauthService.getAccessToken();
     }
 
-    public getUsername(): string {
-        // 1. Get the claims (the "payload") from the ID token
-        const claims = this.oauthService.getIdentityClaims();
-
-        if (!claims) {
-            console.error('AuthService: Cannot get username, claims are null.');
-            return '';
-        }
-
-        // 2. Return the 'email' claim.
-        //    We told our backend (notification-service) to use 'email'
-        //    so we *must* use 'email' here.
-        return (claims as any)['email'];
+    public getRefreshToken(): string | null {
+        return localStorage.getItem(this.REFRESH_TOKEN_KEY) || this.oauthService.getRefreshToken();
     }
 
-    private checkAdminRole(): void {
-        const token = this.oauthService.getAccessToken();
-        if (!token) return;
+    // --- Unified Logout ---
+    public logout(): void {
+        // 1. Clear Manual Tokens
+        localStorage.removeItem(this.TOKEN_KEY);
+        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+
+        // 2. Check for OIDC Session
+        const idToken = this.oauthService.getIdToken();
+        const logoutUrl = this.oauthService.logoutUrl;
+
+        // 3. Clear Local State
+        this.oauthService.logOut(true);
+        this.isAuthenticated.set(false);
+        this.isAdmin.set(false);
+
+        // 4. Redirect
+        if (idToken && logoutUrl) {
+            const postLogoutRedirectUri = globalThis.location.origin;
+            const url = `${logoutUrl}?id_token_hint=${idToken}&post_logout_redirect_uri=${encodeURIComponent(
+                postLogoutRedirectUri
+            )}`;
+            globalThis.location.href = url;
+        } else {
+            this.router.navigate(['/login']);
+        }
+    }
+
+    // --- Refresh Logic ---
+    public refreshAccessToken(): Observable<any> {
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken) {
+            return throwError(() => new Error('No refresh token available'));
+        }
+
+        return this.apiService.refreshToken(refreshToken).pipe(
+            tap((response: any) => {
+                this.saveToken(response);
+                console.log('Token refreshed successfully');
+            }),
+            catchError((err) => {
+                console.error('Refresh failed', err);
+                this.logout(); // Logout if refresh fails
+                return throwError(() => err);
+            })
+        );
+    }
+
+    // --- Helpers ---
+
+    public getUsername(): string {
+        const token = this.getToken();
+        if (!token) return '';
 
         try {
-            // Decode the token payload
-            const decodedToken: any = jwtDecode(token);
+            const decoded = jwtDecode<any>(token);
+            return decoded.email ?? decoded.sub ?? '';
+        } catch {
+            // invalid/malformed token → treat as no username
+            return '';
+        }
+    }
 
-            // Check for the "roles" array inside "realm_access"
-            // This path is specific to Keycloak
-            const realmManagementRoles = decodedToken.realm_access?.['roles'] || [];
-
-            // Now we check this *new* array for our admin roles
-            const hasAdminRole = realmManagementRoles.includes('ROLE_ADMIN');
-
-            // Set our signal
-            this.isAdmin.set(hasAdminRole);
-        } catch (err) {
-            console.error('Failed to decode token', err);
+    private checkAdminRole(token?: string | null): void {
+        const t = token ?? this.getToken();
+        if (!t) {
             this.isAdmin.set(false);
+            return;
+        }
+        try {
+            const decoded = jwtDecode<any>(t);
+            const roles = decoded.realm_access?.roles ?? [];
+            this.isAdmin.set(roles.includes('ROLE_ADMIN'));
+        } catch {
+            this.isAdmin.set(false); // invalid or corrupted token
+        }
+    }
+
+    private isTokenExpired(token: string): boolean {
+        try {
+            const decoded = jwtDecode<any>(token);
+
+            if (!decoded.exp) return false; // no exp → treat as non-expiring
+
+            return decoded.exp < Math.floor(Date.now() / 1000);
+        } catch {
+            // If token can't be decoded → treat as expired for safety
+            return true;
         }
     }
 }

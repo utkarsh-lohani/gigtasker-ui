@@ -1,0 +1,134 @@
+<div class="register-page">
+
+    <!-- Background blobs -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="register-card">
+
+        <div class="header">
+            <h1>Create Your Account</h1>
+            <p>Join GigTasker and start your journey</p>
+        </div>
+
+        <mat-stepper [linear]="true" class="stepper">
+
+            <!-- ACCOUNT STEP -->
+            <mat-step [stepControl]="accountForm">
+                <form [formGroup]="accountForm">
+
+                    <ng-template matStepLabel>Account</ng-template>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Username</mat-label>
+                        <mat-icon matPrefix>person</mat-icon>
+                        <input matInput formControlName="username" required />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Email</mat-label>
+                        <mat-icon matPrefix>mail</mat-icon>
+                        <input matInput type="email" formControlName="email" required />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Password</mat-label>
+                        <mat-icon matPrefix>lock</mat-icon>
+                        <input matInput type="password" formControlName="password" />
+                    </mat-form-field>
+
+                    <div class="step-actions">
+                        <button mat-flat-button color="primary" matStepperNext>Next</button>
+                    </div>
+                </form>
+            </mat-step>
+
+            <!-- PERSONAL STEP -->
+            <mat-step [stepControl]="personalForm">
+                <form [formGroup]="personalForm">
+
+                    <ng-template matStepLabel>Personal</ng-template>
+
+                    <div class="row">
+                        <mat-form-field appearance="outline">
+                            <mat-label>First Name</mat-label>
+                            <input matInput formControlName="firstName" required />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Last Name</mat-label>
+                            <input matInput formControlName="lastName" />
+                        </mat-form-field>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Date of Birth</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Gender</mat-label>
+                        <mat-select formControlName="genderId">
+                            @for (g of genders(); track g.id) {
+                                <mat-option [value]="g.id">{{ g.name }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Ethnicity (optional)</mat-label>
+                        <input matInput formControlName="ethnicity">
+                    </mat-form-field>
+
+                    <div class="step-actions">
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-flat-button color="primary" matStepperNext>Next</button>
+                    </div>
+                </form>
+            </mat-step>
+
+            <!-- LOCATION STEP -->
+            <mat-step [stepControl]="locationForm">
+                <form [formGroup]="locationForm">
+
+                    <ng-template matStepLabel>Location</ng-template>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Country</mat-label>
+                        <input
+                            type="text"
+                            matInput
+                            placeholder="Search country"
+                            [formControl]="countryFilterCtrl"
+                            [matAutocomplete]="auto"
+                        />
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCountry">
+                            @for (c of filteredCountries(); track c.id) {
+                                <mat-option [value]="c">{{ c.name }} ({{ c.isoCode }})</mat-option>
+                            }
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Region</mat-label>
+                        <input matInput formControlName="region" readonly />
+                    </mat-form-field>
+
+                    <div class="step-actions">
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-flat-button color="primary" (click)="submit()">Register</button>
+                    </div>
+                </form>
+            </mat-step>
+
+        </mat-stepper>
+
+        <div class="footer">
+            Already have an account?
+            <a routerLink="/login">Log in</a>
+        </div>
+    </div>
+</div>

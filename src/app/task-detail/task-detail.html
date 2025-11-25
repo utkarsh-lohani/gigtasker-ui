@@ -1,76 +1,79 @@
-<div class="detail-container">
-    <a mat-stroked-button routerLink="/dashboard" class="back-button">
-        <mat-icon>arrow_back</mat-icon>
-        Back to Dashboard
-    </a>
+<div class="detail-container" *ngIf="task(); else loading">
 
-    @if (task()) {
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>{{ task()?.title }}</mat-card-title>
-            @if(poster()) {
-            <mat-card-subtitle>
-                Posted by: {{ poster()?.firstName }} {{ poster()?.lastName }}
-            </mat-card-subtitle>
-            }
-        </mat-card-header>
-        <mat-card-content>
-            <div class="task-meta-chips">
-                <mat-chip [class.status-open]="task()?.status === 'OPEN'">
-                    {{ task()?.status | titlecase }}
-                </mat-chip>
+  <!-- MAIN INFO CARD -->
+  <mat-card class="task-card">
+    <mat-card-header>
+      <div class="header-content">
+        <mat-card-title>{{ task()?.title }}</mat-card-title>
+        <mat-chip-set>
+          <mat-chip [class]="task()?.status">{{ task()?.status }}</mat-chip>
+        </mat-chip-set>
+      </div>
+      <mat-card-subtitle>Posted by User #{{ task()?.posterUserId }}</mat-card-subtitle>
+    </mat-card-header>
 
-                @if (task()?.deadline && task()?.status !== 'COMPLETED') {
-                <mat-chip color="warn" highlighted>
-                    <mat-icon matChipAvatar>timer</mat-icon>
-                    Due: {{ task()?.deadline | date : 'mediumDate' }}
-                </mat-chip>
-                } @if ((task()?.minPay || task()?.maxPay) && task()?.status !== 'COMPLETED') {
-                <mat-chip color="accent" highlighted>
-                    <mat-icon matChipAvatar>attach_money</mat-icon>
-                    Range: ${{ task()?.minPay }} - ${{ task()?.maxPay }}
-                </mat-chip>
-                }
+    <mat-card-content>
+      <div class="metrics-row">
+        <div class="metric">
+          <mat-icon>attach_money</mat-icon>
+          <span>
+            {{ task()?.minPay | currency }} - {{ task()?.maxPay ? (task()?.maxPay | currency) : 'No Limit' }}
+          </span>
+        </div>
+        <div class="metric">
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ task()?.deadline | date:'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <p class="description">{{ task()?.description }}</p>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <!-- WORKER ACTION: MARK DONE -->
+      <button mat-raised-button color="accent"
+              *ngIf="isAssignedWorker() && task()?.status === 'ASSIGNED'"
+              (click)="completeTask()">
+        <mat-icon>check_circle</mat-icon> Mark as Done
+      </button>
+
+      <!-- PUBLIC ACTION: BID -->
+      <button mat-flat-button color="primary"
+              *ngIf="!isPoster() && task()?.status === 'OPEN'"
+              (click)="openBidDialog()">
+        Place Bid
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- POSTER SECTION: MANAGE BIDS -->
+  @if (isPoster() && task()?.status === 'OPEN') {
+    <div class="bids-section">
+      <h3>Current Bids ({{ bids().length }})</h3>
+
+      <mat-list class="bid-list">
+        @for (bid of bids(); track bid.bidId) {
+          <mat-list-item class="bid-item">
+            <span matListItemTitle>{{ bid.bidderName }}</span>
+            <span matListItemLine>{{ bid.proposal }}</span>
+            <div matListItemMeta class="bid-meta">
+              <span class="bid-amount">{{ bid.amount | currency }}</span>
+              <button mat-stroked-button color="primary" (click)="acceptBid(bid)">Accept</button>
             </div>
-            <hr />
-            <h3>Description</h3>
-            <p>{{ task()?.description }}</p>
-        </mat-card-content>
-        <mat-card-content>
-            <h3>Description</h3>
-            <p>{{ task()?.description }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-            @if (task()?.status === 'OPEN') { @if (isOwner()) {
-            <button mat-flat-button color="accent" (click)="openViewBidsDialog()">
-                <mat-icon>visibility</mat-icon>
-                View Bids
-            </button>
-            } @else {
-            <button mat-flat-button color="primary" (click)="openBidDialog()">
-                Bid on this Gig
-            </button>
-            } } @else if (task()?.status === 'ASSIGNED') { @if (isWorker()) {
-            <button mat-flat-button color="primary" (click)="markAsCompleted()">
-                <mat-icon>check_circle</mat-icon>
-                Mark as Done
-            </button>
-            } @else if (isOwner()) {
-            <button mat-stroked-button disabled>
-                <mat-icon>hourglass_top</mat-icon>
-                Work in Progress...
-            </button>
-            } @else {
-            <button mat-button disabled>Gig Assigned</button>
-            } } @else if (task()?.status === 'COMPLETED') {
-            <button mat-button disabled class="completed-badge">
-                <mat-icon>task_alt</mat-icon>
-                COMPLETED
-            </button>
-            }
-        </mat-card-actions>
-    </mat-card>
-    } @else {
-    <mat-spinner diameter="80"></mat-spinner>
-    }
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        }
+        @if (bids().length === 0) {
+          <p class="empty-state">No bids yet. Sit tight!</p>
+        }
+      </mat-list>
+    </div>
+  }
+
 </div>
+
+<ng-template #loading>
+  <div class="loading-state">Loading...</div>
+</ng-template>

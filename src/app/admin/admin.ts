@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { UserDTO } from '../core/models/user.model';
-import { ApiService } from '../core/services/api';
+import { ApiService } from '../core/services/api-service';
 import { MatChipsModule } from '@angular/material/chips';
 import { RolesDialog } from '../roles-dialog/roles-dialog';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,7 +24,7 @@ import { MatDialog } from '@angular/material/dialog';
     templateUrl: './admin.html',
     styleUrl: './admin.scss',
 })
-export class Admin {
+export class AdminComponent {
     private readonly apiService = inject(ApiService);
     private readonly snackBar = inject(MatSnackBar);
     private readonly dialog = inject(MatDialog);

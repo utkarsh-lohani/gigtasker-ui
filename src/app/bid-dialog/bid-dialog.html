@@ -1,36 +1,51 @@
-<h2 mat-dialog-title>Place Your Bid</h2>
-
+<h2 mat-dialog-title>Place a Bid</h2>
 <mat-dialog-content>
-    <p>Submit your bid and explain why you're the best for this gig.</p>
+    <p class="task-summary">
+        Bidding on: <strong>{{ data.title }}</strong> <br />
+        <span class="budget-hint">
+            Budget: {{ data.minPay | currency }} -
+            {{ data.maxPay ? (data.maxPay | currency) : 'No Limit' }}
+        </span>
+    </p>
 
-    <form [formGroup]="bidForm" class="bid-dialog-form">
-        <mat-form-field appearance="fill">
-            <mat-label>Your Bid Amount</mat-label>
+    <form [formGroup]="bidForm" class="bid-form">
+        <!-- Amount Input -->
+        <mat-form-field appearance="outline">
+            <mat-label>Bid Amount</mat-label>
             <span matTextPrefix>$&nbsp;</span>
-            <input matInput type="number" formControlName="amount" placeholder="50" />
-            @if (bidForm.controls.amount.hasError('required')) {
-            <mat-error>An amount is required.</mat-error>
-            }
+            <input matInput type="number" formControlName="amount" placeholder="0.00" />
+
+            <!-- Dynamic Validation Errors -->
+            <mat-error *ngIf="bidForm.get('amount')?.hasError('min')">
+                Minimum bid is {{ data.minPay | currency }}
+            </mat-error>
+            <mat-error *ngIf="bidForm.get('amount')?.hasError('max')">
+                Maximum bid is {{ data.maxPay | currency }}
+            </mat-error>
+            <mat-error *ngIf="bidForm.get('amount')?.hasError('required')">
+                Amount is required
+            </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Your Proposal</mat-label>
+        <!-- Proposal Input -->
+        <mat-form-field appearance="outline">
+            <mat-label>Proposal / Pitch</mat-label>
             <textarea
                 matInput
                 formControlName="proposal"
-                placeholder="e.g. 'I have built this exact shelf 5 times and can do it in an hour.'"
                 rows="4"
+                placeholder="Explain why you are the best fit for this gig..."
             ></textarea>
-            @if (bidForm.controls.proposal.hasError('required')) {
-            <mat-error>A proposal is required.</mat-error>
-            }
+            <mat-error *ngIf="bidForm.get('proposal')?.hasError('minlength')">
+                Please write at least 10 characters
+            </mat-error>
         </mat-form-field>
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button (click)="dialogRef.close()">Cancel</button>
-    <button mat-flat-button color="primary" [disabled]="bidForm.invalid" (click)="submitBid()">
+    <button mat-button (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="bidForm.invalid" (click)="submit()">
         Submit Bid
     </button>
 </mat-dialog-actions>

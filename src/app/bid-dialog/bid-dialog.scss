@@ -1,5 +1,32 @@
-.bid-dialog-form {
+.bid-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
+    min-width: 400px;
+    margin-top: 1rem;
+}
+
+.task-summary {
+    margin-bottom: 1.5rem;
+    color: #555;
+
+    strong {
+        color: #000;
+        font-size: 1.1rem;
+    }
+
+    .budget-hint {
+        display: inline-block;
+        margin-top: 0.5rem;
+        background: #e8f5e9; // Light Green background
+        color: #2e7d32; // Dark Green text
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+}
+
+mat-form-field {
+    width: 100%;
 }

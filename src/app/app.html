@@ -30,15 +30,15 @@
             Log Out
         </button>
         } @else {
-        <button mat-button (click)="authService.register()">
+        <a mat-button [routerLink]="'/registration'">
             <mat-icon>person_add</mat-icon>
             Register
-        </button>
+        </a>
 
-        <button mat-button (click)="authService.login()">
+        <a mat-button [routerLink]="'/login'">
             <mat-icon>login</mat-icon>
             Log In
-        </button>
+        </a>
         }
     </mat-toolbar>
 

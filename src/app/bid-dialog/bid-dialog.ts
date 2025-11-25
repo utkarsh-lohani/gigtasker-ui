@@ -1,58 +1,73 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from '../core/services/api';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TaskDTO } from '../core/models/task.model';
+import { ApiService } from '../core/services/api-service';
 
 @Component({
     selector: 'app-bid-dialog',
     imports: [
+        CommonModule,
+        ReactiveFormsModule,
         MatDialogModule,
+        MatButtonModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule,
-        ReactiveFormsModule
+        MatSnackBarModule,
     ],
     templateUrl: './bid-dialog.html',
     styleUrls: ['./bid-dialog.scss'],
 })
 export class BidDialog {
     private readonly fb = inject(FormBuilder);
-    private readonly apiService = inject(ApiService);
+    private readonly api = inject(ApiService);
+    private readonly dialogRef = inject(MatDialogRef<BidDialog>);
     private readonly snackBar = inject(MatSnackBar);
+    public data: TaskDTO = inject(MAT_DIALOG_DATA);
 
-    // This gives us a reference to the dialog *itself*
-    public dialogRef = inject(MatDialogRef<BidDialog>);
-
-    // This is how we get data *into* the dialog
-    public data: { taskId: number } = inject(MAT_DIALOG_DATA);
-
-    public bidForm = this.fb.group({
-        amount: [null as number | null, [Validators.required, Validators.min(1)]],
-        proposal: ['', Validators.required], // Your new field!
+    bidForm = this.fb.group({
+        amount: [
+            '',
+            [
+                Validators.required,
+                Validators.min(this.data.minPay || 1), // Enforce Min
+                this.data.maxPay ? Validators.max(this.data.maxPay) : Validators.nullValidator, // Enforce Max if exists
+            ],
+        ],
+        proposal: ['', [Validators.required, Validators.minLength(10)]],
     });
 
-    public submitBid(): void {
-        if (this.bidForm.invalid) {
-            return;
-        }
+    submit() {
+        if (this.bidForm.invalid) return;
 
-        const { amount, proposal } = this.bidForm.value;
+        const payload = {
+            taskId: this.data.id,
+            amount: this.bidForm.value.amount,
+            proposal: this.bidForm.value.proposal,
+        };
 
-        this.apiService.placeBid(this.data.taskId, amount!, proposal!).subscribe({
-            next: (bid) => {
-                this.snackBar.open(`Bid of $${bid.amount} placed successfully!`, 'OK', {
+        this.api.placeBid(payload as any).subscribe({
+            next: (res) => {
+                this.snackBar.open('Bid placed successfully!', 'OK', {
                     duration: 3000,
                 });
-                this.dialogRef.close(true); // Close the dialog and send back "success"
+                this.dialogRef.close(true); // Return success
             },
             error: (err) => {
                 console.error(err);
-                this.snackBar.open('Failed to place bid.', 'Close', { duration: 3000 });
+                this.snackBar.open(err.error?.message || 'Failed to place bid', 'Close', {
+                    duration: 5000,
+                });
             },
         });
+    }
+
+    close() {
+        this.dialogRef.close(false);
     }
 }

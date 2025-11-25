@@ -5,7 +5,7 @@ import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApiService } from '../core/services/api';
+import { ApiService } from '../core/services/api-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { WebSocketService } from '../core/services/web-socket';
@@ -56,7 +56,7 @@ export class ViewBidsDialog implements OnInit {
 
     public loadBids(): void {
         this.isLoading.set(true);
-        this.apiService.getBidDetailsForTask(this.data.taskId).subscribe({
+        this.apiService.getBidsForTask(this.data.taskId).subscribe({
             next: (data) => {
                 this.bids.set(data);
                 this.isLoading.set(false);

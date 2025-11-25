@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { TaskDTO } from '../core/models/task.model';
-import { ApiService } from '../core/services/api';
+import { ApiService } from '../core/services/api-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserDTO } from '../core/models/user.model';
 import { MatNativeDateModule } from '@angular/material/core';

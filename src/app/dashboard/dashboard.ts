@@ -1,6 +1,6 @@
 
 import { Component, effect, inject, QueryList, signal, ViewChildren } from '@angular/core';
-import { ApiService } from '../core/services/api';
+import { ApiService } from '../core/services/api-service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';

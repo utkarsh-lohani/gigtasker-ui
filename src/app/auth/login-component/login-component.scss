@@ -1,0 +1,126 @@
+/* =========================================================
+   FULLSCREEN CONTAINER — Prevents scroll
+========================================================= */
+.login-page {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden; /* prevents page scroll */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: var(--bg);
+}
+
+/* =========================================================
+   BLOBS (Glass Theme)
+========================================================= */
+.blob {
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.45;
+    animation: float 12s ease-in-out infinite alternate;
+    pointer-events: none; /* prevents scroll issues */
+}
+
+.blob1 { background: var(--blob1, #ff8ba7); top: -50px; left: -60px; }
+.blob2 { background: var(--blob2, #8bb9ff); bottom: -50px; right: -50px; animation-delay: 2s; }
+.blob3 { background: var(--blob3, #c3ff8b); top: 40%; left: 55%; animation-delay: 4s; }
+
+@keyframes float {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(35px, -40px); }
+}
+
+/* =========================================================
+   GLASS LOGIN CARD
+========================================================= */
+.login-card {
+    width: 380px;
+    padding: 40px 36px;
+    border-radius: 22px;
+
+    background: color-mix(in srgb, var(--card-bg) 40%, transparent);
+    backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12),
+                inset 0 0 40px rgba(255, 255, 255, 0.05);
+
+    transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg));
+    transition: transform 0.15s ease-out;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.header h1 {
+    text-align: center;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.header p {
+    text-align: center;
+    color: color-mix(in srgb, var(--text) 70%, transparent);
+}
+
+/* =========================================================
+   FORM FIELDS
+========================================================= */
+.form-field { width: 100%; margin-bottom: 22px; }
+
+/* Fixing Material borders and colors */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__trailing,
+.mdc-notched-outline__notch {
+    border-color: var(--border) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+    border-color: var(--text) !important;
+}
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+.primary-btn {
+    width: 100%;
+    height: 50px;
+    border-radius: 14px !important;
+    background: var(--text) !important;
+    color: var(--bg) !important;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.primary-btn:hover:not([disabled]) {
+    background: color-mix(in srgb, var(--text) 85%, black);
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer {
+    text-align: center;
+    margin-top: 18px;
+    color: var(--text);
+}
+
+.footer a {
+    color: var(--text);
+    font-weight: 600;
+}

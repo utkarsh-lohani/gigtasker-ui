@@ -1,23 +1,35 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './dashboard/dashboard';
 import { authGuard } from './core/auth-guard';
-import { TaskDetail } from './task-detail/task-detail';
-import { Admin } from './admin/admin';
 
 export const routes: Routes = [
     {
-        path: 'dashboard',
-        component: Dashboard,
-        canActivate: [authGuard],
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
     },
     {
-        path: 'tasks/:id',
-        component: TaskDetail,
+        path: 'login',
+        loadComponent: () => import('./auth/login-component/login-component').then((m) => m.LoginComponent),
+    },
+    {
+        path: 'registration',
+        loadComponent: () =>
+            import('./auth/registration-component/registration-component').then((m) => m.RegistrationComponent),
+    },
+    {
+        path: 'dashboard',
+        loadComponent: () =>
+            import('./dashboard/dashboard')
+                .then((m) => m.Dashboard),
         canActivate: [authGuard],
     },
     {
         path: 'admin',
-        component: Admin,
-        canActivate: [authGuard]
-    }
+        loadComponent: () => import('./admin/admin').then((m) => m.AdminComponent),
+        canActivate: [authGuard],
+    },
+    {
+        path: '**',
+        redirectTo: 'login',
+    },
 ];
