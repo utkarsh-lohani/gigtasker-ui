@@ -2,7 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {authConfig} from '../../../auth.config';
 import {jwtDecode} from 'jwt-decode';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
 import {catchError, firstValueFrom, Observable, tap, throwError} from 'rxjs';
 import {AuthApi} from '../api/auth-api';
 
@@ -21,8 +21,16 @@ export class AuthService {
     public isAdmin = signal(false);
     public isDoneLoading = signal(false);
 
+    public lastRoute: string | null = null;
+
     constructor() {
         this.oauthService.configure(authConfig);
+
+        this.router.events.subscribe(e => {
+            if (e instanceof NavigationEnd) {
+                this.lastRoute = e.urlAfterRedirects;
+            }
+        });
     }
 
     public async initLoginFlow(): Promise<void> {

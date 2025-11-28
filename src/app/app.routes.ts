@@ -29,7 +29,7 @@ export const routes: Routes = [
     },
     {
         path: 'admin',
-        loadComponent: () => import('./admin-component/admin-component').then((m) => m.AdminComponent),
+        loadComponent: () => import('./components/admin-component/admin-component').then((m) => m.AdminComponent),
         canActivate: [authGuard],
     },
     {

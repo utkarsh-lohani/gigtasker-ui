@@ -1,16 +1,15 @@
-import {inject} from '@angular/core';
-import {CanActivateFn, Router} from '@angular/router';
-import {AuthService} from '../services/state/auth-service';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/state/auth-service';
 
-export const noAuthGuard: CanActivateFn = (route, state) => {
-    const authService = inject(AuthService);
+export const noAuthGuard: CanActivateFn = () => {
+    const auth = inject(AuthService);
     const router = inject(Router);
 
-    // If user IS authenticated, kick them to Dashboard
-    if (authService.isAuthenticated()) {
-        return router.createUrlTree(['/dashboard']);
+    if (auth.isAuthenticated()) {
+        const last = auth.lastRoute;
+        return router.createUrlTree([last || '/dashboard']);
     }
 
-    // If user is NOT authenticated, let them see the Login page
     return true;
 };
