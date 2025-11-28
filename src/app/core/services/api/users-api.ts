@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {UserDTO} from '../../models/user.model';
+import {UserDTO} from '../../models/user-model';
 import {GigtaskerConstants} from '../constant';
 import {HttpClient} from '@angular/common/http';
 

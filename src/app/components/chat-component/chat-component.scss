@@ -1,0 +1,128 @@
+.chat-container {
+    display: flex;
+    height: calc(100vh - 140px);
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f5f5f5;
+}
+
+.sidebar {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 0; // Reset default mat-card padding
+
+    .sidebar-header {
+        padding: 1.5rem;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        h3 {
+            margin: 0;
+            font-weight: 500;
+        }
+    }
+
+    mat-nav-list {
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .active {
+        background-color: #e8f5e9; // Light Green
+        border-left: 4px solid #2e7d32;
+    }
+
+    .empty {
+        padding: 2rem;
+        text-align: center;
+        color: #999;
+    }
+}
+
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.chat-header {
+    padding: 1rem 1.5rem;
+    h3 {
+        margin: 0;
+        color: #333;
+    }
+}
+
+.chat-history {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #fafafa;
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+    .time {
+        font-size: 0.7rem;
+        opacity: 0.6;
+        margin-top: 4px;
+        text-align: right;
+    }
+
+    // Them (Left)
+    background-color: #fff;
+    color: #333;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+
+    // Me (Right)
+    &.mine {
+        background-color: #2e7d32; // GigTasker Green
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+
+        .time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+    }
+}
+
+.chat-input {
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid #eee;
+
+    mat-form-field {
+        width: 100%;
+        margin-bottom: -1.25em;
+    }
+}
+
+.no-selection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #bdbdbd;
+
+    mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+    }
+}

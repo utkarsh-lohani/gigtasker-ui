@@ -3,7 +3,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTableModule} from '@angular/material/table';
-import {TaskDTO} from '../../core/models/task.model';
+import {TaskDTO} from '../../core/models/task-model';
 import {Router} from '@angular/router';
 
 @Component({

@@ -5,15 +5,15 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatStepper, MatStepperModule} from '@angular/material/stepper';
-import {TaskDTO} from '../../core/models/task.model';
+import {TaskDTO} from '../../core/models/task-model';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {UserDTO} from '../../core/models/user.model';
+import {UserDTO} from '../../core/models/user-model';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {TasksApi} from '../../core/services/api/tasks-api';
 
 @Component({
-    selector: 'app-create-task',
+    selector: 'app-create-task-component',
     imports: [
     ReactiveFormsModule,
     MatStepperModule,
@@ -24,10 +24,10 @@ import {TasksApi} from '../../core/services/api/tasks-api';
     MatDatepickerModule,
     MatNativeDateModule
 ],
-    templateUrl: './create-task.html',
-    styleUrl: './create-task.scss',
+    templateUrl: './create-task-component.html',
+    styleUrl: './create-task-component.scss',
 })
-export class CreateTask {
+export class CreateTaskComponent {
     private readonly fb = inject(FormBuilder);
     private readonly tasksApi = inject(TasksApi);
     private readonly snackBar = inject(MatSnackBar);

@@ -5,14 +5,14 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
-import {UserDTO} from '../core/models/user.model';
+import {UserDTO} from '../core/models/user-model';
 import {MatChipsModule} from '@angular/material/chips';
 import {RolesDialog} from '../components/roles-dialog/roles-dialog';
 import {MatDialog} from '@angular/material/dialog';
 import {UsersApi} from '../core/services/api/users-api';
 
 @Component({
-    selector: 'app-admin',
+    selector: 'app-admin-component',
     imports: [
     MatTableModule,
     MatButtonModule,
@@ -20,8 +20,8 @@ import {UsersApi} from '../core/services/api/users-api';
     MatProgressSpinnerModule,
     MatChipsModule
 ],
-    templateUrl: './admin.html',
-    styleUrl: './admin.scss',
+    templateUrl: './admin-component.html',
+    styleUrl: './admin-component.scss',
 })
 export class AdminComponent {
     private readonly usersApi = inject(UsersApi);

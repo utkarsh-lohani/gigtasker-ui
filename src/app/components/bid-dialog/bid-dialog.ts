@@ -6,7 +6,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
-import {TaskDTO} from '../../core/models/task.model';
+import {TaskDTO} from '../../core/models/task-model';
 import {BidsApi} from '../../core/services/api/bids-api';
 
 @Component({

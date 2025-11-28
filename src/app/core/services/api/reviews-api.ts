@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { ReviewDTO } from '../../models/review.model';
+import { ReviewDTO } from '../../models/review-model';
 import { HttpClient } from '@angular/common/http';
 import { GigtaskerConstants } from '../constant';
 

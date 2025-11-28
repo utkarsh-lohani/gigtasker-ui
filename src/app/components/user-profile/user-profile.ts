@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserDTO } from '../../core/models/user.model';
+import { UserDTO } from '../../core/models/user-model';
 import { UsersApi } from '../../core/services/api/users-api';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,10 +12,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { CountryDTO } from '../../core/models/country-region.model';
-import { GenderDTO } from '../../core/models/gender.model';
+import { CountryDTO } from '../../core/models/country-region-model';
+import { GenderDTO } from '../../core/models/gender-model';
 import { ReferenceDataApi } from '../../core/services/api/reference-data-api';
-import { ReviewDTO } from '../../core/models/review.model';
+import { ReviewDTO } from '../../core/models/review-model';
 import { ReviewsApi } from '../../core/services/api/reviews-api';
 
 @Component({

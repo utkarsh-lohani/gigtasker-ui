@@ -12,8 +12,8 @@ import {MatOptionModule} from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatIconModule} from '@angular/material/icon';
-import {Country, CountryDTO} from '../../core/models/country-region.model';
-import {GenderDTO} from '../../core/models/gender.model';
+import {Country, CountryDTO} from '../../core/models/country-region-model';
+import {GenderDTO} from '../../core/models/gender-model';
 import {ReferenceDataApi} from '../../core/services/api/reference-data-api';
 import {AuthApi} from '../../core/services/api/auth-api';
 
@@ -48,6 +48,9 @@ export class RegistrationComponent implements OnInit {
     filteredCountries = signal<CountryDTO[]>([]);
 
     countryFilterCtrl = this.fb.control<string | CountryDTO>('');
+
+    maxDate = new Date();
+    minDate = new Date(1900, 0, 1);
 
     accountForm = this.fb.group({
         username: ['', Validators.required],

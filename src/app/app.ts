@@ -3,9 +3,9 @@ import {RouterLink, RouterOutlet} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {AuthService} from './core/services/state/auth.service';
+import {AuthService} from './core/services/state/auth-service';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
-import {WebSocketService} from './core/services/infra/web-socket';
+import {WebSocketService} from './core/services/infra/web-socket-service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({

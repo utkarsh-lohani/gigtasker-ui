@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {BidDetailDTO, BidDTO, MyBidDetailDTO} from '../../models/bid.model';
+import {BidDetailDTO, BidDTO, MyBidDetailDTO} from '../../models/bids-model';
 import {HttpClient} from '@angular/common/http';
 import {GigtaskerConstants} from '../constant';
 

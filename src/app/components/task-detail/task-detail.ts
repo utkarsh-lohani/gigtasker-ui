@@ -9,10 +9,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
-import { map, switchMap } from 'rxjs/operators'; // Import RxJS operators
+import { map, switchMap } from 'rxjs/operators';
 import { BidDialog } from '../bid-dialog/bid-dialog';
-import { BidDetailDTO } from '../../core/models/bid.model';
-import { TaskDTO } from '../../core/models/task.model';
+import { BidDetailDTO } from '../../core/models/bids-model';
+import { TaskDTO } from '../../core/models/task-model';
 import { TasksApi } from '../../core/services/api/tasks-api';
 import { UsersApi } from '../../core/services/api/users-api';
 import { BidsApi } from '../../core/services/api/bids-api';
@@ -41,6 +41,9 @@ export class TaskDetail implements OnInit {
     private readonly dialog = inject(MatDialog);
     private readonly snack = inject(MatSnackBar);
 
+    tiltX = signal('0deg');
+    tiltY = signal('0deg');
+
     task = signal<TaskDTO | null>(null);
     bids = signal<BidDetailDTO[]>([]);
 
@@ -54,6 +57,23 @@ export class TaskDetail implements OnInit {
         if (id) {
             this.loadTask(Number(id));
         }
+    }
+
+    handleTilt(event: MouseEvent) {
+        const card = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        const x = event.clientX - card.left;
+        const y = event.clientY - card.top;
+
+        const rotateX = ((y - card.height / 2) / 20) * -1;
+        const rotateY = (x - card.width / 2) / 20;
+
+        this.tiltX.set(`${rotateX}deg`);
+        this.tiltY.set(`${rotateY}deg`);
+    }
+
+    resetTilt() {
+        this.tiltX.set('0deg');
+        this.tiltY.set('0deg');
     }
 
     loadTask(id: number) {
@@ -166,11 +186,34 @@ export class TaskDetail implements OnInit {
                     width: '500px',
                     data: {
                         taskId: task.id,
-                        revieweeId: u.keycloakId, // Use the UUID!
+                        revieweeId: u.keycloakId,
                     },
                 });
             },
             error: () => this.snack.open('Could not find user details', 'Close'),
+        });
+    }
+
+    contactUser() {
+        const task = this.task();
+        if (!task) return;
+
+        // Determine who to talk to (The "Other" person)
+        let targetUserId = task.posterUserId;
+        if (this.isPoster() && task.assignedUserId) {
+            targetUserId = task.assignedUserId;
+        }
+
+        // We need the UUID for the Chat Service
+        this.usersApi.getUserById(targetUserId).subscribe((u) => {
+            this.router.navigate(['/dashboard'], {
+                queryParams: {
+                    tab: 'chat',
+                    taskId: task.id,
+                    targetId: u.keycloakId,
+                    targetName: u.username,
+                },
+            });
         });
     }
 }

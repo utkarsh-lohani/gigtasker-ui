@@ -1,4 +1,4 @@
-import {TaskStatusEnum} from "./task.model";
+import {TaskStatusEnum} from "./task-model";
 
 export enum BidStatusEnum {
     PENDING = 'PENDING',

@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {Wallet, WalletTransaction} from '../../models/wallet.model';
+import {Wallet, WalletTransaction} from '../../models/wallet-model';
 import {GigtaskerConstants} from '../constant';
 import {HttpClient} from '@angular/common/http';
 

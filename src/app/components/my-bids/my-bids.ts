@@ -1,5 +1,5 @@
 import {Component, inject, Input} from '@angular/core';
-import {MyBidDetailDTO} from '../../core/models/bid.model';
+import {MyBidDetailDTO} from '../../core/models/bids-model';
 import {CommonModule, NgClass, TitleCasePipe} from '@angular/common';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';

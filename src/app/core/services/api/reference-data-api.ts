@@ -2,8 +2,8 @@ import {inject, Injectable} from '@angular/core';
 import {GigtaskerConstants} from '../constant';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {CountryDTO} from '../../models/country-region.model';
-import {GenderDTO} from '../../models/gender.model';
+import {CountryDTO} from '../../models/country-region-model';
+import {GenderDTO} from '../../models/gender-model';
 
 @Injectable({
     providedIn: 'root',

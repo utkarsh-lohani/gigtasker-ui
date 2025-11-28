@@ -188,4 +188,17 @@ export class AuthService {
             return true;
         }
     }
+
+    public getUserId(): string {
+        const token = this.getToken();
+        if (!token) return '';
+
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.sub || '';
+        } catch (e) {
+            console.error("Failed to decode user ID", e);
+            return '';
+        }
+    }
 }

@@ -28,10 +28,10 @@
             <mat-card-title>Post a New Gig</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <app-create-task
+            <app-create-task-component
                 [currentUser]="user()"
                 (taskCreated)="refreshTaskLists()"
-            ></app-create-task>
+            ></app-create-task-component>
         </mat-card-content>
     </mat-card>
 
@@ -65,6 +65,17 @@
                 <!-- Lazy render: Only show when tab index is 3 -->
                 @if (selectedTabIndex() === 3) {
                 <app-wallet-component></app-wallet-component>
+                }
+            </div>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon class="tab-icon">chat</mat-icon>
+                Messages
+            </ng-template>
+            <div class="tab-content">
+                @if (selectedTabIndex() === 4) {
+                <app-chat-component></app-chat-component>
                 }
             </div>
         </mat-tab>

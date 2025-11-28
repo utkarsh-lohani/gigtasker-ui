@@ -9,7 +9,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTableModule} from '@angular/material/table';
-import {Wallet, WalletTransaction} from '../../core/models/wallet.model';
+import {Wallet, WalletTransaction} from '../../core/models/wallet-model';
 import {WalletApi} from '../../core/services/api/wallet-api';
 
 @Component({

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {RxStomp} from '@stomp/rx-stomp';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AuthService} from '../state/auth.service';
+import {AuthService} from '../state/auth-service';
 
 @Injectable({
     providedIn: 'root',

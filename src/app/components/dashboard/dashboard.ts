@@ -1,32 +1,46 @@
-import {Component, effect, inject, QueryList, signal, ViewChildren} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {MatCardModule} from '@angular/material/card';
-import {CreateTask} from '../create-task/create-task';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {TaskList} from '../task-list/task-list';
-import {MatTabsModule} from '@angular/material/tabs';
-import {TaskDTO} from '../../core/models/task.model';
-import {MyBids} from '../my-bids/my-bids';
-import {MyBidDetailDTO} from '../../core/models/bid.model';
-import {WebSocketService} from '../../core/services/infra/web-socket';
-import {MatDialog} from '@angular/material/dialog';
-import {MatIconModule} from "@angular/material/icon";
-import {WalletComponent} from '../wallet-component/wallet-component';
-import {UsersApi} from '../../core/services/api/users-api';
-import {TasksApi} from '../../core/services/api/tasks-api';
-import {BidsApi} from '../../core/services/api/bids-api';
+import { Component, effect, inject, OnInit, QueryList, signal, ViewChildren } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatCardModule } from '@angular/material/card';
+import { CreateTaskComponent } from '../create-task-component/create-task-component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TaskList } from '../task-list/task-list';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TaskDTO } from '../../core/models/task-model';
+import { MyBids } from '../my-bids/my-bids';
+import { MyBidDetailDTO } from '../../core/models/bids-model';
+import { WebSocketService } from '../../core/services/infra/web-socket-service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { WalletComponent } from '../wallet-component/wallet-component';
+import { UsersApi } from '../../core/services/api/users-api';
+import { TasksApi } from '../../core/services/api/tasks-api';
+import { BidsApi } from '../../core/services/api/bids-api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ChatComponent } from '../chat-component/chat-component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [MatCardModule, MatTabsModule, CreateTask, TaskList, MatProgressSpinnerModule, MyBids, MatIconModule, WalletComponent],
+    imports: [
+    MatCardModule,
+    MatTabsModule,
+    CreateTaskComponent,
+    TaskList,
+    MatProgressSpinnerModule,
+    MyBids,
+    MatIconModule,
+    WalletComponent,
+    ChatComponent
+],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
     private readonly usersApi = inject(UsersApi);
     private readonly tasksApi = inject(TasksApi);
     private readonly bidsApi = inject(BidsApi);
     private readonly wsService = inject(WebSocketService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
 
     public user = toSignal(this.usersApi.getMe());
 
@@ -47,8 +61,16 @@ export class Dashboard {
 
     private readonly dialog = inject(MatDialog);
 
+    ngOnInit() {
+        this.route.queryParams.subscribe((params) => {
+            if (params['tab'] === 'chat') {
+                this.selectedTabIndex.set(4);
+            }
+        });
+    }
+
     openCreateTaskDialog() {
-        this.dialog.open(CreateTask, {
+        this.dialog.open(CreateTaskComponent, {
             width: '600px',
             disableClose: true,
         });
@@ -56,6 +78,12 @@ export class Dashboard {
 
     onTabChange(index: number) {
         this.selectedTabIndex.set(index);
+        if (index !== 4) {
+            this.router.navigate([], {
+                queryParams: { tab: null, taskId: null, targetId: null },
+                queryParamsHandling: 'merge',
+            });
+        }
     }
 
     constructor() {
