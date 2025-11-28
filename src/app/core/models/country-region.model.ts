@@ -18,3 +18,12 @@ export interface SubRegion {
     name: string; // e.g., "Southern Asia"
     region?: Region;
 }
+
+export interface CountryDTO {
+    id: number;
+    name: string;
+    isoCode: string;
+    phoneCode: string;
+    currencyCode?: string;
+    region: string;
+}

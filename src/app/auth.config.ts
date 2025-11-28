@@ -1,5 +1,5 @@
 // src/app/auth.config.ts
-import { AuthConfig } from 'angular-oauth2-oidc';
+import {AuthConfig} from 'angular-oauth2-oidc';
 
 export const authConfig: AuthConfig = {
     // 1. The URL of your Keycloak "issuer"

@@ -1,21 +1,21 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatStepperModule } from '@angular/material/stepper';
-import { Router, RouterLink } from '@angular/router';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatIconModule } from '@angular/material/icon';
-import { Country } from '../../core/models/country-region.model';
-import { Gender } from '../../core/models/gender.model';
-import { ReferenceDataApi } from '../../core/services/api/reference-data-api';
-import { AuthApi } from '../../core/services/api/auth-api';
+import {CommonModule} from '@angular/common';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatInputModule} from '@angular/material/input';
+import {MatStepperModule} from '@angular/material/stepper';
+import {Router, RouterLink} from '@angular/router';
+import {MatSelectModule} from '@angular/material/select';
+import {MatOptionModule} from '@angular/material/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatIconModule} from '@angular/material/icon';
+import {Country, CountryDTO} from '../../core/models/country-region.model';
+import {GenderDTO} from '../../core/models/gender.model';
+import {ReferenceDataApi} from '../../core/services/api/reference-data-api';
+import {AuthApi} from '../../core/services/api/auth-api';
 
 @Component({
     selector: 'app-registration-component',
@@ -43,11 +43,11 @@ export class RegistrationComponent implements OnInit {
     private readonly authApi = inject(AuthApi);
     private readonly router = inject(Router);
 
-    genders = signal<Gender[]>([]);
-    countries = signal<Country[]>([]);
-    filteredCountries = signal<Country[]>([]);
+    genders = signal<GenderDTO[]>([]);
+    countries = signal<CountryDTO[]>([]);
+    filteredCountries = signal<CountryDTO[]>([]);
 
-    countryFilterCtrl = this.fb.control<string | Country>('');
+    countryFilterCtrl = this.fb.control<string | CountryDTO>('');
 
     accountForm = this.fb.group({
         username: ['', Validators.required],
@@ -64,7 +64,7 @@ export class RegistrationComponent implements OnInit {
     });
 
     locationForm = this.fb.group({
-        country: [null as Country | null, Validators.required],
+        country: [null as CountryDTO | null, Validators.required],
         region: [{ value: '', disabled: true }],
     });
 
@@ -89,10 +89,10 @@ export class RegistrationComponent implements OnInit {
         });
     }
 
-    onCountrySelected(country: Country) {
+    onCountrySelected(country: CountryDTO) {
         this.locationForm.patchValue({
             country: country,
-            region: (country as any).region ? (country as any).region.name : '',
+            region: country.region ?? '',
         });
     }
 
@@ -109,7 +109,7 @@ export class RegistrationComponent implements OnInit {
         );
     }
 
-    autoSelectCountry(allCountries: Country[]) {
+    autoSelectCountry(allCountries: CountryDTO[]) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
         let iso = 'US';
         if (tz.includes('Kolkata') || tz.includes('Calcutta')) iso = 'IN';

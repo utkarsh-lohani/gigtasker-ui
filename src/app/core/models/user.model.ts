@@ -1,5 +1,5 @@
-import { Country } from './country-region.model';
-import { Gender } from './gender.model';
+import {Country} from './country-region.model';
+import {Gender} from './gender.model';
 
 export interface UserDTO {
     id: number;

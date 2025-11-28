@@ -1,16 +1,15 @@
-
-import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { UserDTO } from '../core/models/user.model';
-import { MatChipsModule } from '@angular/material/chips';
-import { RolesDialog } from '../roles-dialog/roles-dialog';
-import { MatDialog } from '@angular/material/dialog';
-import { UsersApi } from '../core/services/api/users-api';
+import {Component, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatTableModule} from '@angular/material/table';
+import {UserDTO} from '../core/models/user.model';
+import {MatChipsModule} from '@angular/material/chips';
+import {RolesDialog} from '../components/roles-dialog/roles-dialog';
+import {MatDialog} from '@angular/material/dialog';
+import {UsersApi} from '../core/services/api/users-api';
 
 @Component({
     selector: 'app-admin',

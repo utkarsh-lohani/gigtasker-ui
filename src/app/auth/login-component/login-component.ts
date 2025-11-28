@@ -1,13 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/state/auth.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { AuthApi } from '../../core/services/api/auth-api';
+import {Component, inject, signal} from '@angular/core';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {Router} from '@angular/router';
+import {AuthService} from '../../core/services/state/auth.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {AuthApi} from '../../core/services/api/auth-api';
 
 @Component({
     selector: 'app-login-component',

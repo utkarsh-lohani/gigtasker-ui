@@ -1,0 +1,87 @@
+<div class="detail-container">
+    @if (isLoading()) {
+    <div class="loading-state">Loading...</div>
+    } @else if (task()) {
+
+    <!-- MAIN INFO CARD -->
+    <mat-card class="task-card">
+        <mat-card-header>
+            <div class="header-content">
+                <mat-card-title>{{ task()?.title }}</mat-card-title>
+                <mat-chip-set>
+                    <mat-chip [class]="task()?.status">{{ task()?.status }}</mat-chip>
+                </mat-chip-set>
+            </div>
+            <mat-card-subtitle>Posted by User #{{ task()?.posterUserId }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div class="metrics-row">
+                <div class="metric">
+                    <mat-icon>attach_money</mat-icon>
+                    <span>
+                        {{ task()?.minPay | currency }} -
+                        {{ task()?.maxPay ? (task()?.maxPay | currency) : 'No Limit' }}
+                    </span>
+                </div>
+                <div class="metric">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span>{{ task()?.deadline | date : 'mediumDate' }}</span>
+                </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <p class="description">{{ task()?.description }}</p>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+            <!-- WORKER ACTION: MARK DONE -->
+            @if (isAssignedWorker() && task()?.status === 'ASSIGNED') {
+            <button mat-raised-button color="accent" (click)="completeTask()">
+                <mat-icon>check_circle</mat-icon> Mark as Done
+            </button>
+            }
+
+            <!-- PUBLIC ACTION: BID -->
+            @if (!isPoster() && task()?.status === 'OPEN') {
+            <button mat-flat-button color="primary" (click)="openBidDialog()">Place Bid</button>
+            }
+
+            <!-- POSTER ACTION: CANCEL TASK -->
+            @if (isPoster() && (task()?.status === 'OPEN' || task()?.status === 'ASSIGNED')) {
+            <button mat-stroked-button color="warn" (click)="cancelTask()">Cancel Task</button>
+            } @if ((isPoster() || isAssignedWorker()) && task()?.status === 'COMPLETED') {
+            <button mat-stroked-button color="primary" (click)="openReviewDialog()">
+                <mat-icon>star_rate</mat-icon>
+                Leave Review
+            </button>
+            }
+        </mat-card-actions>
+    </mat-card>
+
+    <!-- POSTER SECTION: MANAGE BIDS -->
+    @if (isPoster() && task()?.status === 'OPEN') {
+    <div class="bids-section">
+        <h3>Current Bids ({{ bids().length }})</h3>
+
+        <mat-list class="bid-list">
+            @for (bid of bids(); track bid.bidId) {
+            <mat-list-item class="bid-item">
+                <span matListItemTitle>{{ bid.bidderName }}</span>
+                <span matListItemLine>{{ bid.proposal }}</span>
+                <div matListItemMeta class="bid-meta">
+                    <span class="bid-amount">{{ bid.amount | currency }}</span>
+                    <button mat-stroked-button color="primary" (click)="acceptBid(bid)">
+                        Accept
+                    </button>
+                </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            } @if (bids().length === 0) {
+            <p class="empty-state">No bids yet. Sit tight!</p>
+            }
+        </mat-list>
+    </div>
+    } }
+</div>

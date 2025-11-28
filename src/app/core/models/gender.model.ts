@@ -16,3 +16,9 @@ export enum GenderType {
     PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY',
     OTHER = 'OTHER',
 }
+
+export interface GenderDTO {
+    id: number;
+    name: string;
+    description: string;
+}

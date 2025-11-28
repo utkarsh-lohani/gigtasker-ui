@@ -1,12 +1,7 @@
-import {
-    HttpErrorResponse,
-    HttpInterceptorFn,
-    HttpRequest,
-    HttpHandlerFn,
-} from '@angular/common/http';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/state/auth.service';
-import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
+import {HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest,} from '@angular/common/http';
+import {inject} from '@angular/core';
+import {AuthService} from '../services/state/auth.service';
+import {BehaviorSubject, catchError, filter, switchMap, take, throwError} from 'rxjs';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);

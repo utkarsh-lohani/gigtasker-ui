@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard';
-import { noAuthGuard } from './core/guards/no-auth-guard';
+import {Routes} from '@angular/router';
+import {authGuard} from './core/guards/auth-guard';
+import {noAuthGuard} from './core/guards/no-auth-guard';
 
 export const routes: Routes = [
     {
@@ -24,7 +24,7 @@ export const routes: Routes = [
     },
     {
         path: 'dashboard',
-        loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
+        loadComponent: () => import('./components/dashboard/dashboard').then((m) => m.Dashboard),
         canActivate: [authGuard],
     },
     {
@@ -34,13 +34,13 @@ export const routes: Routes = [
     },
     {
         path: 'tasks/:id',
-        loadComponent: () => import('./task-detail/task-detail').then((m) => m.TaskDetail),
+        loadComponent: () => import('./components/task-detail/task-detail').then((m) => m.TaskDetail),
         canActivate: [authGuard],
     },
     {
         path: 'profile',
         loadComponent: () =>
-            import('./user-profile/user-profile').then((m) => m.UserProfile),
+            import('./components/user-profile/user-profile').then((m) => m.UserProfile),
         canActivate: [authGuard],
     },
     {

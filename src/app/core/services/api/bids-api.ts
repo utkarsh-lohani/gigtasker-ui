@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BidDTO, BidDetailDTO, MyBidDetailDTO } from '../../models/bid.model';
-import { HttpClient } from '@angular/common/http';
-import { GigtaskerConstants } from '../constant';
+import {inject, Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {BidDetailDTO, BidDTO, MyBidDetailDTO} from '../../models/bid.model';
+import {HttpClient} from '@angular/common/http';
+import {GigtaskerConstants} from '../constant';
 
 @Injectable({
     providedIn: 'root',

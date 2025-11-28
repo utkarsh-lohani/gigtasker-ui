@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Rate User</h2>
+<mat-dialog-content>
+    <p class="hint">How was your experience working on this task?</p>
+
+    <form [formGroup]="form" class="review-form">
+        <!-- Star Rating -->
+        <div class="star-rating">
+            @for (star of stars; track star) {
+            <mat-icon
+                onkeypress=""
+                (click)="setRating(star)"
+                [class.filled]="star <= (form.value.rating || 0)"
+            >
+                star
+            </mat-icon>
+            }
+        </div>
+
+        <!-- Comment -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Comment (Optional)</mat-label>
+            <textarea
+                matInput
+                formControlName="comment"
+                rows="4"
+                placeholder="Share your feedback..."
+            ></textarea>
+            <mat-hint align="end">{{ form.value.comment?.length || 0 }} / 500</mat-hint>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" (click)="submit()">Submit Review</button>
+</mat-dialog-actions>

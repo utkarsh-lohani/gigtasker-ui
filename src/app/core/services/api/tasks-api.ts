@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { GigtaskerConstants } from '../constant';
-import { Observable } from 'rxjs';
-import { TaskDTO } from '../../models/task.model';
-import { HttpClient } from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {GigtaskerConstants} from '../constant';
+import {Observable} from 'rxjs';
+import {TaskDTO} from '../../models/task.model';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',

@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { UserDTO } from '../../models/user.model';
-import { GigtaskerConstants } from '../constant';
-import { HttpClient } from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {UserDTO} from '../../models/user.model';
+import {GigtaskerConstants} from '../constant';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
@@ -38,5 +38,9 @@ export class UsersApi {
 
     public updateProfile(data: Partial<UserDTO>): Observable<UserDTO> {
         return this.http.patch<UserDTO>(`${GigtaskerConstants.API_URL}/api/users/me`, data);
+    }
+
+    public getUserById(userId: number): Observable<UserDTO> {
+        return this.http.get<UserDTO>(`${GigtaskerConstants.API_URL}/api/users/${userId}`);
     }
 }
