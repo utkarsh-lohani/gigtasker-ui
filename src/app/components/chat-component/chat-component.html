@@ -1,71 +1,94 @@
-<div class="chat-container">
-    <!-- SIDEBAR -->
-    <mat-card class="sidebar">
-        <div class="sidebar-header">
-            <h3>Messages</h3>
-        </div>
-        <mat-nav-list>
-            @for (room of rooms(); track room.id) {
-            <mat-list-item (click)="selectRoom(room)" [class.active]="activeRoom()?.id === room.id">
-                <mat-icon matListItemIcon>chat</mat-icon>
-                <span matListItemTitle>Task #{{ room.taskId }}</span>
-                <span matListItemLine>
-                    {{ room.id === 'draft' ? 'New Conversation' : 'Chatting...' }}
-                </span>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            } @if (rooms().length === 0) {
-            <div class="empty">
-                <p>No active chats.</p>
-                <small>Contact a poster or worker from a Task page.</small>
+<div class="chat-page">
+
+    <!-- Background Blobs -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="chat-container glass-card">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <h3>Messages</h3>
             </div>
+
+            <mat-nav-list class="sidebar-list">
+                @for (room of rooms(); track room.id) {
+                    <mat-list-item
+                        (click)="selectRoom(room)"
+                        [class.active]="activeRoom()?.id === room.id"
+                    >
+                        <mat-icon matListItemIcon>chat</mat-icon>
+                        <span matListItemTitle>Task #{{ room.taskId }}</span>
+                        <span matListItemLine>{{ room.id === 'draft' ? 'New Chat' : 'Chatting...' }}</span>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                }
+
+                @if (rooms().length === 0) {
+                    <div class="empty">
+                        <p>No active chats.</p>
+                    </div>
+                }
+            </mat-nav-list>
+        </div>
+
+        <!-- MAIN CHAT WINDOW -->
+        <div class="chat-window glass-panel">
+
+            @if (activeRoom()) {
+
+                <div class="chat-header">
+                    <h3>Chat for Task #{{ activeRoom()?.taskId }}</h3>
+                </div>
+                <mat-divider></mat-divider>
+
+                <!-- MESSAGES -->
+                <div class="chat-history" id="chat-history">
+                    @for (msg of messages(); track $index) {
+                        <div class="message-bubble" [class.mine]="isMyMessage(msg)">
+                            <div class="content">{{ msg.content }}</div>
+                            <div class="time">
+                                {{ msg.timestamp ? (msg.timestamp | date:'shortTime') : 'Just now' }}
+                            </div>
+                        </div>
+                    }
+
+                    @if (messages().length === 0) {
+                        <p class="no-messages">No messages yet. Say hello 😄</p>
+                    }
+                </div>
+
+                <div class="chat-input">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input
+                            matInput
+                            [(ngModel)]="newMessage"
+                            (keyup.enter)="sendMessage()"
+                            placeholder="Type a message..."
+                        />
+                        <button
+                            mat-icon-button
+                            matSuffix
+                            (click)="sendMessage()"
+                            color="primary"
+                            [disabled]="!newMessage.trim()"
+                        >
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+
+            } @else {
+
+                <div class="no-selection">
+                    <mat-icon>forum</mat-icon>
+                    <p>Select a conversation to start chatting</p>
+                </div>
+
             }
-        </mat-nav-list>
-    </mat-card>
-
-    <!-- MAIN WINDOW -->
-    <mat-card class="chat-window">
-        @if (activeRoom()) {
-
-        <div class="chat-header">
-            <h3>Chat for Task #{{ activeRoom()?.taskId }}</h3>
-        </div>
-        <mat-divider></mat-divider>
-
-        <div class="chat-history" id="chat-history">
-            @for (msg of messages(); track msg.timestamp) {
-            <div class="message-bubble" [class.mine]="msg.senderId === myId">
-                <div class="content">{{ msg.content }}</div>
-                <div class="time">{{ msg.timestamp | date : 'shortTime' }}</div>
-            </div>
-            }
         </div>
 
-        <div class="chat-input">
-            <mat-form-field appearance="outline" class="full-width">
-                <input
-                    matInput
-                    [(ngModel)]="newMessage"
-                    (keyup.enter)="sendMessage()"
-                    placeholder="Type a message..."
-                />
-                <button
-                    mat-icon-button
-                    matSuffix
-                    (click)="sendMessage()"
-                    color="primary"
-                    [disabled]="!newMessage.trim()"
-                >
-                    <mat-icon>send</mat-icon>
-                </button>
-            </mat-form-field>
-        </div>
-
-        } @else {
-        <div class="no-selection">
-            <mat-icon>forum</mat-icon>
-            <p>Select a conversation to start chatting</p>
-        </div>
-        }
-    </mat-card>
+    </div>
 </div>

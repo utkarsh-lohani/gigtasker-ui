@@ -21,16 +21,16 @@ import { ChatComponent } from '../chat-component/chat-component';
 @Component({
     selector: 'app-dashboard',
     imports: [
-    MatCardModule,
-    MatTabsModule,
-    CreateTaskComponent,
-    TaskList,
-    MatProgressSpinnerModule,
-    MyBids,
-    MatIconModule,
-    WalletComponent,
-    ChatComponent
-],
+        MatCardModule,
+        MatTabsModule,
+        CreateTaskComponent,
+        TaskList,
+        MatProgressSpinnerModule,
+        MyBids,
+        MatIconModule,
+        WalletComponent,
+        ChatComponent,
+    ],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.scss',
 })
@@ -64,7 +64,10 @@ export class Dashboard implements OnInit {
     ngOnInit() {
         this.route.queryParams.subscribe((params) => {
             if (params['tab'] === 'chat') {
-                this.selectedTabIndex.set(4);
+                // Use a timeout to allow UI to settle if switching rapidly
+                setTimeout(() => {
+                    this.selectedTabIndex.set(4);
+                }, 100);
             }
         });
     }

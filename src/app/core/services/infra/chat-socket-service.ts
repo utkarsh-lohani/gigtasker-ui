@@ -8,58 +8,54 @@ export class ChatSocketService {
     private client: Client | null = null;
     private readonly messageSubject = new Subject<any>();
 
-    constructor() {}
-
-    public connect(authService: AuthService): void {
+    connect(authService: AuthService) {
         const token = authService.getToken();
-        if (!token) return;
+        const myUuid = authService.getUserId(); // Get the UUID
+
+        if (!token || !myUuid) return;
 
         this.client = new Client({
             brokerURL: 'ws://localhost:9090/ws-chat',
-            connectHeaders: {
-                Authorization: `Bearer ${token}`,
-            },
-            debug: (str) => console.debug('[ChatWS]: ' + str),
+            connectHeaders: { Authorization: `Bearer ${token}` },
+            debug: (msg) => console.debug(msg),
             reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
         });
 
-        this.client.onConnect = (frame) => {
-            console.log('Chat WebSocket Connected!');
+        this.client.onConnect = () => {
+            console.log('✅ Chat Connected');
 
-            // Subscribe to private messages sent to this user
-            // Backend sends to: /user/{uuid}/queue/messages
-            this.client?.subscribe('/user/queue/messages', (message: Message) => {
-                if (message.body) {
-                    this.messageSubject.next(JSON.parse(message.body));
-                }
-            });
-        };
+            // Subscribe to the specific user path
+            // Spring's UserDestinationMessageHandler translates this internally,
+            // but subscribing to the explicit path often works better with custom principals.
 
-        this.client.onStompError = (frame) => {
-            console.error('Broker reported error: ' + frame.headers['message']);
-            console.error('Additional details: ' + frame.body);
+            // Standard Alias:
+            this.client?.subscribe('/user/queue/messages', this.onMessageReceived);
+
+            // Explicit Path (Backup):
+            // The backend sends to convertAndSendToUser(uuid, "/queue/messages")
+            // The actual broker path might be /user/{uuid}/queue/messages
+            this.client?.subscribe(`/user/${myUuid}/queue/messages`, this.onMessageReceived);
         };
 
         this.client.activate();
     }
 
-    public sendMessage(destination: string, body: any): void {
-        if (this.client?.connected) {
-            this.client.publish({ destination, body: JSON.stringify(body) });
-        } else {
-            console.error('Cannot send message: Chat WebSocket is disconnected');
-        }
+    sendMessage(destination: string, body: any) {
+        this.client?.publish({ destination, body: JSON.stringify(body) });
     }
 
-    public getMessages(): Observable<any> {
+    onMessageReceived = (msg: Message) => {
+        if (msg.body) {
+            console.log('📩 Real-time Message:', msg.body);
+            this.messageSubject.next(JSON.parse(msg.body));
+        }
+    };
+
+    getMessages(): Observable<any> {
         return this.messageSubject.asObservable();
     }
 
-    public disconnect(): void {
-        if (this.client) {
-            this.client.deactivate();
-        }
+    disconnect() {
+        this.client?.deactivate();
     }
 }

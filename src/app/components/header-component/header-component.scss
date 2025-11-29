@@ -1,0 +1,162 @@
+/* ============================================================
+   Header Structure
+============================================================ */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+
+    padding: 0 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    z-index: 100;
+    transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* Glass Navigation */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(28px) saturate(190%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* Depth increase on scroll */
+.app-header.scrolled {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(35px) saturate(200%);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+}
+
+/* ============================================================
+   Brand / Logo
+============================================================ */
+.brand-small {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.08rem;
+    color: #1a1a1a;
+    cursor: pointer;
+    user-select: none;
+
+    mat-icon {
+        color: #444;
+        font-size: 22px;
+    }
+}
+
+/* ============================================================
+   Navigation Links (VisionOS Capsule Buttons)
+============================================================ */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+.nav-links a,
+.nav-links button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 18px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.6),
+        inset 0 6px 10px rgba(255, 255, 255, 0.4),
+        0 2px 6px rgba(0,0,0,0.06);
+
+    transition:
+        background 0.22s ease,
+        transform 0.15s ease,
+        box-shadow 0.22s ease,
+        color 0.22s ease;
+    cursor: pointer;
+
+    color: #222;
+}
+
+.nav-links a mat-icon,
+.nav-links button mat-icon {
+    font-size: 20px;
+    color: #444;
+}
+
+/* Hover — subtle glow + raise */
+.nav-links a:hover,
+.nav-links button:hover {
+    background: rgba(255, 255, 255, 0.65);
+    transform: translateY(-2px);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+        inset 0 6px 12px rgba(255, 255, 255, 0.55),
+        0 4px 10px rgba(0, 0, 0, 0.07);
+
+    color: #111;
+
+    mat-icon {
+        color: #111;
+    }
+}
+
+/* Active Page Highlight (slide underline like Apple) */
+.nav-links a.active {
+    position: relative;
+    font-weight: 600;
+    color: #000;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 24px;
+        height: 3px;
+        border-radius: 4px;
+        background: rgba(0,0,0,0.5);
+        animation: underlineSlide 0.3s ease;
+    }
+}
+
+@keyframes underlineSlide {
+    from { width: 0; opacity: 0; }
+    to   { width: 24px; opacity: 1; }
+}
+
+/* Logout Button — special tint */
+.logout-btn {
+    background: rgba(255, 80, 80, 0.2);
+    border-color: rgba(255, 120, 120, 0.35);
+
+    &:hover {
+        background: rgba(255, 60, 60, 0.3);
+        transform: translateY(-2px);
+        color: #900;
+    }
+}
+
+/* Tap/Click micro-interaction */
+.nav-links a:active,
+.nav-links button:active {
+    transform: scale(0.96);
+}

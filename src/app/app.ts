@@ -1,23 +1,17 @@
 import {ChangeDetectorRef, Component, effect, inject, OnInit, signal} from '@angular/core';
-import {RouterLink, RouterOutlet} from '@angular/router';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
+import {RouterOutlet} from '@angular/router';
 import {AuthService} from './core/services/state/auth-service';
-import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {WebSocketService} from './core/services/infra/web-socket-service';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { HeaderComponent } from './components/header-component/header-component';
+import { LandingOverlay } from './components/landing-overlay/landing-overlay';
 
 @Component({
     selector: 'app-root',
     imports: [
     RouterOutlet,
-    RouterLink,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule
+    HeaderComponent,
+    LandingOverlay
 ],
     templateUrl: './app.html',
     styleUrl: './app.scss',
@@ -52,19 +46,15 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // Promise 1: Your "fake" 1-second load
-        const fakeLoad = new Promise<void>((resolve) => setTimeout(resolve, 1000));
-
         // Promise 2: The *real* auth flow, with a safety net
         const authLoad = this.authService.initLoginFlow().catch((err) => {
             console.error('Auth flow failed, but continuing.', err);
         });
 
         // Wait for BOTH to finish
-        Promise.all([fakeLoad, authLoad]).then(() => {
-            this.isLoading.set(false);
-
+        authLoad.then(() => {
             this.cdr.detectChanges();
+            this.isLoading.set(false);
         });
     }
 

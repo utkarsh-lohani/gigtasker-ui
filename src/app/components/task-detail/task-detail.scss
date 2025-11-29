@@ -2,12 +2,12 @@
    FULLSCREEN PAGE
 ============================================ */
 .task-page {
-    height: 100vh;
+    height: 100%;
     width: 100%;
     overflow: hidden;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding-top: 40px;
     position: relative;
     background: var(--bg);

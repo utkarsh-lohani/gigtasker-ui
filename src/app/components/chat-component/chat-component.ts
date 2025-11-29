@@ -31,7 +31,7 @@ import { ChatApi } from '../../core/services/api/chat-api';
     styleUrl: './chat-component.scss',
 })
 export class ChatComponent implements OnInit, OnDestroy {
-    private readonly chatApi = inject(ChatApi);
+    private readonly api = inject(ChatApi);
     private readonly auth = inject(AuthService);
     private readonly socket = inject(ChatSocketService);
     private readonly route = inject(ActivatedRoute);
@@ -44,17 +44,32 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.myId = this.auth.getUserId();
-
-        // 1. Connect Socket
         this.socket.connect(this.auth);
 
-        // 2. Load Rooms and Check for Query Params (Deep Linking)
-        this.loadRoomsAndCheckParams();
-
-        // 3. Listen for incoming
+        // 1. Listen for new messages
         this.socket.getMessages().subscribe((msg: any) => {
-            this.handleIncomingMessage(msg);
+            const current = this.activeRoom();
+            // Check if message belongs to current room (either from me or to me)
+            if (
+                current &&
+                (msg.senderId === current.senderId || msg.senderId === current.recipientId)
+            ) {
+                // Create valid message object from notification
+                const chatMsg: ChatMessage = {
+                    chatId: current.chatId,
+                    taskId: current.taskId,
+                    senderId: msg.senderId,
+                    recipientId: this.myId,
+                    content: msg.content,
+                    timestamp: new Date().toISOString(),
+                };
+                this.messages.update((m) => [...m, chatMsg]);
+                this.scrollToBottom();
+            }
         });
+
+        // 2. Load Rooms
+        this.loadRoomsAndCheckParams();
     }
 
     ngOnDestroy() {
@@ -62,41 +77,36 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
 
     loadRoomsAndCheckParams() {
-        this.chatApi.getMyChatRooms().subscribe((rooms) => {
+        this.api.getMyChatRooms().subscribe((rooms) => {
             this.rooms.set(rooms);
 
-            // Check if redirected from Task Detail with intent to chat
+            // Check URL params for deep linking
             const params = this.route.snapshot.queryParams;
-            const targetTaskId = Number(params['taskId']);
-            const targetUuid = params['targetId'];
-
-            if (targetTaskId && targetUuid) {
-                this.openOrDraftRoom(targetTaskId, targetUuid);
+            if (params['taskId'] && params['targetId']) {
+                this.openOrDraftRoom(Number(params['taskId']), params['targetId']);
             }
         });
     }
 
     openOrDraftRoom(taskId: number, targetUuid: string) {
-        // Try to find existing room first
-        const existingRoom = this.rooms().find(
+        const existing = this.rooms().find(
             (r) =>
                 r.taskId === taskId && (r.recipientId === targetUuid || r.senderId === targetUuid)
         );
 
-        if (existingRoom) {
-            this.selectRoom(existingRoom);
+        if (existing) {
+            this.selectRoom(existing);
         } else {
-            // Create local "Draft" room. It becomes real on first message.
-            const draftRoom: ChatRoom = {
+            const draft: ChatRoom = {
                 id: 'draft',
                 chatId: 'new',
-                taskId: taskId,
+                taskId,
                 senderId: this.myId,
                 recipientId: targetUuid,
-                otherUserName: 'User', // Placeholder
+                otherUserName: 'User',
             };
-            this.rooms.update((list) => [draftRoom, ...list]);
-            this.selectRoom(draftRoom);
+            this.rooms.update((r) => [draft, ...r]);
+            this.selectRoom(draft);
         }
     }
 
@@ -104,12 +114,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.activeRoom.set(room);
         this.messages.set([]);
 
-        // Identify the other person
-        const otherUserId = room.senderId === this.myId ? room.recipientId : room.senderId;
+        const otherId = room.senderId === this.myId ? room.recipientId : room.senderId;
 
-        // Fetch History
         if (room.id !== 'draft') {
-            this.chatApi.getChatHistory(room.taskId, otherUserId).subscribe((msgs) => {
+            this.api.getChatHistory(room.taskId, otherId).subscribe((msgs) => {
                 this.messages.set(msgs);
                 this.scrollToBottom();
             });
@@ -120,61 +128,35 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (!this.newMessage.trim() || !this.activeRoom()) return;
 
         const room = this.activeRoom()!;
-        const otherUserId = room.senderId === this.myId ? room.recipientId : room.senderId;
+        const otherId = room.senderId === this.myId ? room.recipientId : room.senderId;
 
         const payload: ChatMessage = {
             chatId: room.chatId,
             taskId: room.taskId,
             senderId: this.myId,
-            recipientId: otherUserId,
+            recipientId: otherId,
             content: this.newMessage,
             timestamp: new Date().toISOString(),
         };
 
-        // 1. Send
         this.socket.sendMessage('/app/chat', payload);
-
-        // 2. Optimistic UI Update
-        this.messages.update((msgs) => [...msgs, payload]);
+        this.messages.update((m) => [...m, payload]);
         this.newMessage = '';
         this.scrollToBottom();
 
-        // 3. If Draft, reload rooms after delay to get real ID
         if (room.id === 'draft') {
-            setTimeout(() => this.reloadRoomsKeepActive(), 1000);
+            setTimeout(() => this.loadRoomsAndCheckParams(), 1000);
         }
     }
 
-    reloadRoomsKeepActive() {
-        this.chatApi.getMyChatRooms().subscribe((rooms) => {
-            this.rooms.set(rooms);
-            // Find the now-created room and set it active so 'draft' flag disappears
-            const currentTask = this.activeRoom()?.taskId;
-            const realRoom = rooms.find((r) => r.taskId === currentTask);
-            if (realRoom) this.activeRoom.set(realRoom);
-        });
-    }
-
-    handleIncomingMessage(msg: any) {
-        const current = this.activeRoom();
-        if (current &&(msg.senderId === current.senderId || msg.senderId === current.recipientId)) {
-            const chatMsg: ChatMessage = {
-                chatId: current.chatId,
-                taskId: current.taskId,
-                senderId: msg.senderId,
-                recipientId: this.myId,
-                content: msg.content,
-                timestamp: new Date().toISOString(),
-            };
-            this.messages.update((msgs) => [...msgs, chatMsg]);
-            this.scrollToBottom();
-        }
+    isMyMessage(msg: ChatMessage) {
+        return String(msg.senderId) === String(this.myId);
     }
 
     scrollToBottom() {
         setTimeout(() => {
-            const element = document.getElementById('chat-history');
-            if (element) element.scrollTop = element.scrollHeight;
+            const el = document.getElementById('chat-history');
+            if (el) el.scrollTop = el.scrollHeight;
         }, 100);
     }
 }

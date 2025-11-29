@@ -1,0 +1,10 @@
+@if (visible()) {
+<div class="landing-overlay" (click)="hide()">
+    <div class="center-content">
+        <h1 class="brand">GigTasker</h1>
+        <p class="tagline">Your work, elevated.</p>
+
+        <button class="enter-btn" (click)="hide(); $event.stopPropagation()">Enter</button>
+    </div>
+</div>
+}
