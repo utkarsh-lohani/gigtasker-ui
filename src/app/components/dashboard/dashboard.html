@@ -49,13 +49,22 @@
         >
             <mat-tab label="All Gigs">
                 @if (selectedTabIndex() === 0) {
-                <app-task-list [tasks]="allTasks()" [isLoading]="allTasksLoading()"></app-task-list>
+                <app-task-list
+                    [tasks]="allTasks()"
+                    [isLoading]="allTasksLoading()"
+                    [showSearch]="true"
+                    (searchValue)="onSearch($event)">
+                </app-task-list>
                 }
             </mat-tab>
 
             <mat-tab label="My Posted Gigs">
                 @if (selectedTabIndex() === 1 && user()) {
-                <app-task-list [tasks]="myTasks()" [isLoading]="myTasksLoading()"></app-task-list>
+                <app-task-list
+                    [tasks]="myTasks()"
+                    [isLoading]="myTasksLoading()"
+                    [showSearch]="false">
+                </app-task-list>
                 }
             </mat-tab>
 

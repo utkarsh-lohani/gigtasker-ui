@@ -1,53 +1,99 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Available Gigs</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        @if (isLoading) {
-        <div class="loader-state">
-            <mat-spinner diameter="50"></mat-spinner>
-        </div>
-        } @else if (tasks && tasks!.length > 0) {
-        <table mat-table [dataSource]="tasks!" class="mat-elevation-z8">
-            <ng-container matColumnDef="sno">
-                <th mat-header-cell *matHeaderCellDef>Serial No.</th>
-                <td mat-cell *matCellDef="let task; let i = index">{{ i + 1 }}</td>
-            </ng-container>
+<div class="list-container">
 
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef>DB ID</th>
-                <td mat-cell *matCellDef="let task">{{ task.id }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="title">
-                <th mat-header-cell *matHeaderCellDef>Title</th>
-                <td mat-cell *matCellDef="let task">{{ task.title }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let task">{{ task.status }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>View</th>
-                <td mat-cell *matCellDef="let task">
-                    <button mat-icon-button color="primary" (click)="viewTask(task.id)">
-                        <mat-icon>visibility</mat-icon>
+    <!-- SEARCH SECTION (Conditional) -->
+    @if (showSearch) {
+    <mat-card class="search-card">
+        <div class="search-bar">
+            <mat-form-field appearance="outline" class="search-input">
+                <mat-icon matPrefix>search</mat-icon>
+                <mat-label>Search services...</mat-label>
+                <input matInput [(ngModel)]="searchQuery" (keyup.enter)="triggerSearch()" placeholder="e.g. Website Design">
+                @if (searchQuery) {
+                    <button mat-icon-button matSuffix (click)="clearSearch()">
+                        <mat-icon>close</mat-icon>
                     </button>
-                </td>
-            </ng-container>
+                }
+            </mat-form-field>
 
-            <tr mat-row (click)="viewTask(row.id)"
-                *matRowDef="let row; columns: displayedColumns; let i = index"
-                class="task-row" onkeypress=""></tr>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        </table>
-        } @else {
-        <div class="empty-state">
-            <mat-icon>info</mat-icon>
-            <p>No tasks found.</p>
+            <div class="filters">
+                <mat-form-field appearance="outline" class="price-input">
+                    <mat-label>Min $</mat-label>
+                    <input matInput type="number" [(ngModel)]="minPrice">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="price-input">
+                    <mat-label>Max $</mat-label>
+                    <input matInput type="number" [(ngModel)]="maxPrice">
+                </mat-form-field>
+                <button mat-flat-button color="primary" (click)="triggerSearch()">
+                    Find
+                </button>
+            </div>
         </div>
-        }
-    </mat-card-content>
-</mat-card>
+    </mat-card>
+    }
+
+    <!-- DATA TABLE -->
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ showSearch ? 'Available Gigs' : 'My Gigs' }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            @if (isLoading) {
+            <div class="loader-state">
+                <mat-spinner diameter="50"></mat-spinner>
+            </div>
+            } @else if (tasks && tasks!.length > 0) {
+
+            <table mat-table [dataSource]="tasks!" class="mat-elevation-z0">
+                <!-- S.No -->
+                <ng-container matColumnDef="sno">
+                    <th mat-header-cell *matHeaderCellDef>#</th>
+                    <td mat-cell *matCellDef="let task; let i = index">{{ i + 1 }}</td>
+                </ng-container>
+
+                <!-- Title -->
+                <ng-container matColumnDef="title">
+                    <th mat-header-cell *matHeaderCellDef>Title</th>
+                    <td mat-cell *matCellDef="let task" class="title-cell">{{ task.title }}</td>
+                </ng-container>
+
+                <!-- Budget (New Column) -->
+                <ng-container matColumnDef="budget">
+                    <th mat-header-cell *matHeaderCellDef>Budget</th>
+                    <td mat-cell *matCellDef="let task" class="budget-cell">
+                        {{ task.minPay | currency }} - {{ task.maxPay | currency }}
+                    </td>
+                </ng-container>
+
+                <!-- Status -->
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let task">
+                        <span class="status-badge" [class]="task.status">{{ task.status }}</span>
+                    </td>
+                </ng-container>
+
+                <!-- Actions -->
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Action</th>
+                    <td mat-cell *matCellDef="let task">
+                        <button mat-icon-button color="primary" (click)="viewTask(task.id)">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row (click)="viewTask(row.id)" *matRowDef="let row; columns: displayedColumns;" class="task-row"></tr>
+            </table>
+
+            } @else {
+            <div class="empty-state">
+                <mat-icon>search_off</mat-icon>
+                <p>No gigs found.</p>
+            </div>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>

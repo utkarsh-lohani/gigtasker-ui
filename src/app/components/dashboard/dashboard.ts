@@ -17,6 +17,8 @@ import { TasksApi } from '../../core/services/api/tasks-api';
 import { BidsApi } from '../../core/services/api/bids-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatComponent } from '../chat-component/chat-component';
+import { SearchFilters } from '../../core/models/search-filter-model';
+import { SearchApi } from '../../core/services/api/search-api';
 
 @Component({
     selector: 'app-dashboard',
@@ -37,6 +39,7 @@ import { ChatComponent } from '../chat-component/chat-component';
 export class Dashboard implements OnInit {
     private readonly usersApi = inject(UsersApi);
     private readonly tasksApi = inject(TasksApi);
+    private readonly searchApi = inject(SearchApi);
     private readonly bidsApi = inject(BidsApi);
     private readonly wsService = inject(WebSocketService);
     private readonly route = inject(ActivatedRoute);
@@ -112,6 +115,32 @@ export class Dashboard implements OnInit {
         });
 
         this.listenForNewTasks();
+    }
+
+    public onSearch(filters: SearchFilters): void {
+        this.allTasksLoading.set(true);
+
+        // Check if filters are empty -> Load all
+        if (!filters.query && !filters.minPrice && !filters.maxPrice) {
+            this.loadAllTasks(); // Revert to standard load
+            return;
+        }
+
+        // Use Search API
+        this.searchApi.searchTasks(filters.query, filters.minPrice || 0, filters.maxPrice || 100000)
+            .subscribe({
+                next: (page: any) => {
+                    // Elastic usually returns a Page object { content: [] }
+                    // Adjust based on your actual API response structure
+                    const results = page.content ? page.content : page;
+                    this.allTasks.set(results);
+                    this.allTasksLoading.set(false);
+                },
+                error: (err: any) => {
+                    console.error('Search failed', err);
+                    this.allTasksLoading.set(false);
+                }
+            });
     }
 
     // This method is called by the (taskCreated) event

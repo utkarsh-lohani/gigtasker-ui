@@ -1,29 +1,70 @@
-table {
-    width: 100%;
-}
-
-// These styles center our loader and empty states
-.loader-state,
-.empty-state {
+.list-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 1rem;
+}
+
+.search-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
     align-items: center;
-    padding: 2rem;
-    height: 150px;
-    color: #777;
-}
+    flex-wrap: wrap;
 
-.empty-state mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-}
-
-.task-row {
-    cursor: pointer; // Makes the mouse turn into a "hand"
-
-    &:hover {
-        background-color: #f5f5f5; // A subtle hover effect
+    .search-input {
+        flex: 2;
+        min-width: 200px;
     }
+
+    .filters {
+        flex: 1;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+
+        .price-input {
+            max-width: 100px;
+        }
+
+        button {
+            height: 56px;
+            margin-bottom: 22px; // Fix alignment with material inputs
+        }
+    }
+}
+
+// Status Colors
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+
+    &.OPEN {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+    &.ASSIGNED {
+        background: #fff3e0;
+        color: #ef6c00;
+    }
+    &.COMPLETED {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    &.CANCELLED {
+        background: #ffebee;
+        color: #c62828;
+    }
+}
+
+.budget-cell {
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    color: #2e7d32;
 }
