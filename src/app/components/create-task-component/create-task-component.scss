@@ -1,0 +1,194 @@
+/* ================================================================
+   PAGE CONTAINER (Shared Light + Dark)
+================================================================ */
+.create-task-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 2rem;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* ================================================================
+   BACKGROUND BLOBS
+================================================================ */
+.blob {
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.45;
+    animation: float 12s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.blob1 {
+    background: #ff8ba7;
+    top: -60px;
+    left: -80px;
+}
+.blob2 {
+    background: #8bb9ff;
+    bottom: -60px;
+    right: -80px;
+    animation-delay: 2s;
+}
+.blob3 {
+    background: #c3ff8b;
+    top: 50%;
+    left: 55%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(40px, -35px);
+    }
+}
+
+/* ================================================================
+   GLASS PANEL (LIGHT MODE)
+================================================================ */
+.glass-card {
+    width: 85%;
+    max-width: 1100px;
+    padding: 3rem 3rem 4rem;
+    border-radius: 24px;
+
+    background: color-mix(in srgb, white 35%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08), inset 0 0 30px rgba(255, 255, 255, 0.06);
+
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================================================
+   GLASS PANEL (AMOLED DARK MODE)
+================================================================ */
+html.dark-mode .glass-card {
+    background: rgba(20, 20, 20, 0.35); /* ✨ semi-transparent for real glass */
+    border: 1px solid rgba(180, 255, 180, 0.08); /* subtle neon tint */
+
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+
+    box-shadow:
+        0 0 25px rgba(120, 255, 120, 0.08),   /* outer glow */
+        inset 0 0 30px rgba(255, 255, 255, 0.04); /* inner glass fog */
+}
+
+
+/* ================================================================
+   HEADINGS
+================================================================ */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text); /* respects theme */
+}
+
+.step-label {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* ================================================================
+   MATERIAL FORM FIELDS
+================================================================ */
+.form-row {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+
+    mat-form-field {
+        flex: 1;
+    }
+}
+
+/* Light mode border */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__trailing,
+.mdc-notched-outline__notch {
+    border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+html.dark-mode .mdc-notched-outline__leading,
+html.dark-mode .mdc-notched-outline__trailing,
+html.dark-mode .mdc-notched-outline__notch {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+html.dark-mode .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+html.dark-mode .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+html.dark-mode .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch {
+    border-color: #9dff92 !important;
+}
+
+/* Placeholder color fix */
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* ================================================================
+   BUTTONS
+================================================================ */
+.primary-btn {
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 14px !important;
+    transition: 0.25s ease;
+    font-weight: 600;
+}
+
+.primary-btn:hover:not([disabled]) {
+    transform: translateY(-2px);
+    opacity: 0.85;
+}
+
+.actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ================================================================
+   STEPPER CUSTOMIZATION
+================================================================ */
+.mat-step-header {
+    padding: 1rem 0 !important;
+}
+
+html.dark-mode .mat-step-header {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+html.dark-mode .mat-step-icon {
+    background: #1a1a1a !important;
+}
+
+html.dark-mode .mat-step-icon-selected {
+    background: #9dff92 !important;
+    color: black !important;
+}

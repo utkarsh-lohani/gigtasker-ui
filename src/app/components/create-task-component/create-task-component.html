@@ -1,72 +1,118 @@
-<mat-stepper [linear]="true" #stepper orientation="vertical">
-    <mat-step [formGroup]="step1Group" label="What's the gig?">
-        <mat-form-field appearance="fill" style="width: 100%">
-            <mat-label>Task Title</mat-label>
-            <input
-                matInput
-                formControlName="title"
-                required
-                placeholder="e.g. 'Assemble IKEA shelf'"
-            />
-        </mat-form-field>
-        <div>
-            <button mat-flat-button color="primary" matStepperNext>Next</button>
-        </div>
-    </mat-step>
+<div class="task-wizard-container">
+    <!-- Progress Header -->
+    <div class="progress-header">
+        <div class="step" [class.active]="currentStep === 1">1. Gig Info</div>
+        <div class="bar"></div>
+        <div class="step" [class.active]="currentStep === 2">2. Details</div>
+        <div class="bar"></div>
+        <div class="step" [class.active]="currentStep === 3">3. Budget</div>
+    </div>
 
-    <mat-step [formGroup]="step2Group" label="Add details">
-        <mat-form-field appearance="fill" style="width: 100%">
-            <mat-label>Description (optional)</mat-label>
-            <textarea
-                matInput
-                formControlName="description"
-                rows="3"
-                placeholder="Add details..."
-            ></textarea>
-        </mat-form-field>
-        <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-flat-button color="primary" matStepperNext>Next</button>
-        </div>
-    </mat-step>
+    <!-- STEP 1 -->
+    @if (currentStep === 1) {
+    <div class="wizard-card">
+        <h2>What’s the gig?</h2>
 
-    <mat-step [formGroup]="step3Group" label="Budget & Rules">
-        <div class="form-row">
-            <mat-form-field appearance="fill">
-                <mat-label>Deadline</mat-label>
-                <input [min]="minDate" matInput [matDatepicker]="picker" formControlName="deadline" required />
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                @if (step3Group.controls.deadline.hasError('required')) {
-                <mat-error>Deadline is required</mat-error>
-                }
+        <form [formGroup]="step1Group">
+            <mat-form-field appearance="outline" class="full-field">
+                <mat-label>Task Title</mat-label>
+                <input
+                    matInput
+                    formControlName="title"
+                    required
+                    placeholder="e.g. Fix laptop, assemble furniture…"
+                />
             </mat-form-field>
-
-            <mat-form-field appearance="fill">
-                <mat-label>Bid Limit (Per Person)</mat-label>
-                <input matInput type="number" formControlName="maxBidsPerUser" min="1" max="10" />
-                <mat-hint>Max 10 bids/user</mat-hint>
-            </mat-form-field>
-        </div>
-
-        <div class="form-row">
-            <mat-form-field appearance="fill">
-                <mat-label>Min Pay ($)</mat-label>
-                <input matInput type="number" formControlName="minPay" />
-                <span matTextPrefix>$&nbsp;</span>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-                <mat-label>Max Pay ($)</mat-label>
-                <input matInput type="number" formControlName="maxPay" />
-                <span matTextPrefix>$&nbsp;</span>
-            </mat-form-field>
-        </div>
+        </form>
 
         <div class="actions">
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-flat-button color="primary" (click)="saveTask()">Post Task</button>
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="nextStep()"
+                [disabled]="step1Group.invalid"
+            >
+                Continue
+            </button>
         </div>
-    </mat-step>
-</mat-stepper>
+    </div>
+    }
+
+    <!-- STEP 2 -->
+    @if (currentStep === 2) {
+    <div class="wizard-card">
+        <h2>Tell us more</h2>
+
+        <form [formGroup]="step2Group">
+            <mat-form-field appearance="outline" class="full-field">
+                <mat-label>Description</mat-label>
+                <textarea
+                    matInput
+                    formControlName="description"
+                    rows="4"
+                    placeholder="Explain the gig in detail…"
+                ></textarea>
+            </mat-form-field>
+        </form>
+
+        <div class="actions">
+            <button mat-button (click)="prevStep()">Back</button>
+            <button mat-flat-button color="primary" (click)="nextStep()">Continue</button>
+        </div>
+    </div>
+    }
+
+    <!-- STEP 3 -->
+    @if (currentStep === 3) {
+    <div class="wizard-card">
+        <h2>Budget & Rules</h2>
+
+        <form [formGroup]="step3Group">
+            <div class="two-col">
+                <mat-form-field appearance="outline">
+                    <mat-label>Deadline</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="deadline"
+                        [min]="minDate"
+                        required
+                    />
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Max bids per user</mat-label>
+                    <input
+                        matInput
+                        type="number"
+                        formControlName="maxBidsPerUser"
+                        min="1"
+                        max="10"
+                    />
+                </mat-form-field>
+            </div>
+
+            <div class="two-col">
+                <mat-form-field appearance="outline">
+                    <mat-label>Min Pay ($)</mat-label>
+                    <span matTextPrefix>$&nbsp;</span>
+                    <input matInput type="number" formControlName="minPay" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Max Pay ($)</mat-label>
+                    <span matTextPrefix>$&nbsp;</span>
+                    <input matInput type="number" formControlName="maxPay" />
+                </mat-form-field>
+            </div>
+        </form>
+
+        <div class="actions">
+            <button mat-button (click)="prevStep()">Back</button>
+            <button mat-flat-button color="primary" (click)="saveTask()">Post Gig</button>
+        </div>
+    </div>
+    }
+</div>

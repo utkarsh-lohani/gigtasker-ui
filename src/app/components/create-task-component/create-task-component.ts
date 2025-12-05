@@ -1,29 +1,31 @@
-import {Component, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatStepper, MatStepperModule} from '@angular/material/stepper';
-import {TaskDTO} from '../../core/models/task-model';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {UserDTO} from '../../core/models/user-model';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {TasksApi} from '../../core/services/api/tasks-api';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { TaskDTO } from '../../core/models/task-model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserDTO } from '../../core/models/user-model';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { TasksApi } from '../../core/services/api/tasks-api';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'app-create-task-component',
     imports: [
-    ReactiveFormsModule,
-    MatStepperModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDatepickerModule,
-    MatNativeDateModule
-],
+        ReactiveFormsModule,
+        MatStepperModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatCardModule,
+    ],
     templateUrl: './create-task-component.html',
     styleUrl: './create-task-component.scss',
 })
@@ -39,6 +41,16 @@ export class CreateTaskComponent {
 
     // This lets us grab the stepper from the HTML to control it
     @ViewChild('stepper') stepper!: MatStepper;
+
+    currentStep = 1;
+
+    nextStep() {
+        if (this.currentStep < 3) this.currentStep++;
+    }
+
+    prevStep() {
+        if (this.currentStep > 1) this.currentStep--;
+    }
 
     step1Group = this.fb.group({
         title: ['', Validators.required],
@@ -79,7 +91,7 @@ export class CreateTaskComponent {
                 this.stepper.reset(); // This resets the stepper UI
                 this.step1Group.reset(); // This clears the form data
                 this.step2Group.reset(); // This clears the form data
-                this.step3Group.reset({maxBidsPerUser: 3}); // This clears the form data
+                this.step3Group.reset({ maxBidsPerUser: 3 }); // This clears the form data
                 this.taskCreated.emit();
             },
             error: (err) => {

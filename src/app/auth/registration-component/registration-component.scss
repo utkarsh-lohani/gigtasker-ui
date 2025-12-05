@@ -79,6 +79,10 @@
     color: var(--text) !important;
 }
 
+::ng-deep .mat-horizontal-content-container {
+    padding: 12px 20px !important;
+}
+
 ::ng-deep .mat-step-text-label {
     color: var(--text) !important;
 }

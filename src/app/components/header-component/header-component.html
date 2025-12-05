@@ -5,32 +5,28 @@
     </div>
 
     <nav class="nav-links">
-
         @if (auth.isAuthenticated()) {
 
-            <a routerLink="/dashboard" routerLinkActive="active">
-                <mat-icon>dashboard</mat-icon> Dashboard
-            </a>
+        <a routerLink="/dashboard" routerLinkActive="active">
+            <mat-icon>dashboard</mat-icon> Dashboard
+        </a>
 
-            @if (auth.isAdmin()) {
-                <a routerLink="/admin" routerLinkActive="active">
-                    <mat-icon>admin_panel_settings</mat-icon> Admin
-                </a>
-            }
+        @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">
+            <mat-icon>admin_panel_settings</mat-icon> Admin
+        </a>
+        }
 
-            <a routerLink="/profile" routerLinkActive="active">
-                <mat-icon>person</mat-icon> Profile
-            </a>
+        <a routerLink="/profile" routerLinkActive="active"> <mat-icon>person</mat-icon> Profile </a>
 
-            <button class="logout-btn" (click)="auth.logout()">
-                <mat-icon>logout</mat-icon> Log out
-            </button>
+        <button class="logout-btn" (click)="auth.logout()">
+            <mat-icon>logout</mat-icon> Log out
+        </button>
 
         } @else {
-
             <a routerLink="/login"><mat-icon>login</mat-icon> Log in</a>
             <a routerLink="/registration"><mat-icon>person_add</mat-icon> Register</a>
-
         }
+        <app-theme-toggle></app-theme-toggle>
     </nav>
 </header>

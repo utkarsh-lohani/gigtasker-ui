@@ -53,6 +53,10 @@ export class LoginComponent {
         this.tiltY.set('0deg');
     }
 
+    redirectToRegistration() {
+        this.router.navigate(['/registration']);
+    }
+
     login() {
         if (!this.username || !this.password) return;
 
