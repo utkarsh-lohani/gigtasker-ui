@@ -1,29 +1,29 @@
 # --- Stage 1: Build ---
-FROM node:24-alpine AS build
+FROM node:lts-alpine AS build
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+ENV NODE_ENV=production
 
-# Copy the rest of the source code
+# Copy package files first for better caching
+COPY package*.json ./
+RUN npm ci
+
+# Copy source
 COPY . .
 
-# Build the app
-# This will create /app/dist/gigtasker-ui/browser
+# Build Angular app
 RUN npm run build -- --configuration=production
 
 # --- Stage 2: Serve ---
 FROM nginx:alpine
 
-# Clean default Nginx files
+# Remove default nginx files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the build output.
-# CRITICAL: Note the '/browser' at the end!
+# Copy build output
 COPY --from=build /app/dist/gigtasker-ui/browser /usr/share/nginx/html
 
-# Copy custom Nginx config
+# Custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
